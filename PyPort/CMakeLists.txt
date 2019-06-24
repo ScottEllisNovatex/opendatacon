@@ -29,9 +29,14 @@ find_package(Python3 COMPONENTS Development)	# The new way of doing things, can 
 if (Python3_FOUND) 
 	message("Python3 Found")
 	if (NOT Python3_LIBRARY_DEBUG)
-		#Appveyor does not seem to have the debug libraries and we dont need them - I think - just link to Release
+		#Appveyor does not seem to have the debug libraries copy release to debug andtry again - very hacky. Version 37 dependent...
+		# need to extract the non-lib part of the name
 		message("Found Python Release Library but no Debug Library ${Python3_LIBRARY_RELEASE}")
-		set(Python3_LIBRARIES "${Python3_LIBRARY_RELEASE}")
+		message("Python Library dirs ${Python3_LIBRARY_DIRS}")
+		execute_process(
+			COMMAND copy "${Python3_LIBRARY_RELEASE}" "${Python3_LIBRARY_DIRS}/Python37_d.lib"
+		)
+		find_package(Python3 COMPONENTS Development)	# Repeat now both libs are there...
 	endif()
 
 else()

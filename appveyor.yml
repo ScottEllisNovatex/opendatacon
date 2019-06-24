@@ -59,10 +59,10 @@ before_build:
 - ps: >-
         If ($env:Platform -Match "64") {
             $env:GEN_PLAT=" Win64"
-            $env:PythonPath="C:\Python37-x64\"
+            $env:PythonPath="C:/Python37-x64/"
         } Else {
             $env:GEN_PLAT=""
-            $env:PythonPath="C:\Python37\"
+            $env:PythonPath="C:/Python37/"
         }
 - cmd: 'cmake . -B%cmake_builddir% -G"Visual Studio 15 2017%GEN_PLAT%" -DFULL=ON -DCMAKE_CONFIGURATION_TYPES=%configuration% -DMODBUS_HOME=c:\libmodbus\libmodbus\windows%cpu_bits% -DMICROHTTPD_HOME=C:\libmicrohttpd\libmicrohttpd-0.9.17-w%cpu_bits% -DPython3_ROOT_DIR=%PythonPath%'
 #build:

@@ -32,10 +32,14 @@ if (Python3_FOUND)
 		#Appveyor does not seem to have the debug libraries copy release to debug andtry again - very hacky. Version 37 dependent...
 		# need to extract the non-lib part of the name
 		message("Found Python Release Library but no Debug Library ${Python3_LIBRARY_RELEASE}")
-		message("Python Library dirs ${Python3_LIBRARY_DIRS}")
+		get_filename_component(LibFileName "${Python3_LIBRARY_RELEASE}" NAME_WLE)
+		get_filename_component(LibFileDir "${Python3_LIBRARY_RELEASE}" DIRECTORY)
+		message("Target Filename: ${LibFileDir}/${LibFileName}_d.lib")
 		execute_process(
-			COMMAND copy "${Python3_LIBRARY_RELEASE}" "${Python3_LIBRARY_DIRS}/Python37_d.lib"
+			COMMAND copy "${Python3_LIBRARY_RELEASE}" "${LibFileDir}/${LibFileName}_d.lib"
+			OUTPUT_VARIABLE copyresult
 		)
+		message("Copy Result :${copyresult}")
 		find_package(Python3 COMPONENTS Development)	# Repeat now both libs are there...
 	endif()
 

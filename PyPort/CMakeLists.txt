@@ -39,9 +39,9 @@ if (Python3_FOUND)
 			execute_process(
 				COMMAND xcopy "${Python3_LIBRARY_RELEASE}" "./${LibFileName}_d.lib" /F/Y
 				WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-				OUTPUT_VARIABLE xcopyresult
-				message("XCopy Result :${xcopyresult}")
+				OUTPUT_VARIABLE xcopyresult	
 			)
+			message("XCopy Result :${xcopyresult}")
 			execute_process(
 				COMMAND dir 
 				WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}

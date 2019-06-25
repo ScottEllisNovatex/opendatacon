@@ -21,8 +21,8 @@ project(PyPort)
 cmake_minimum_required(VERSION 2.8)
 file(GLOB ${PROJECT_NAME}_SRC *.cpp *.h *.def PythonCode/*.py)
 
-# For Appveyor the paths are C:\Python37 for x86 and C:\Python37-x64 for 3.7.3 which is what we are using. Need to specifiy this explicitly?
-# Need to apt-get install for travis, for Appveyor we need to set Python_ROOT_DIR so it finds the correct version x86 or x64.
+# For Appveyor the paths are C:\Python37 for x86 and C:\Python37-x64 for 3.7.3 which is what we are using. 
+# For Appveyor we need to set Python_ROOT_DIR so it finds the correct version x86 or x64. There is code in the appveyor.yml file to do this.
 
 find_package(Python3 COMPONENTS Development)	# The new way of doing things, can pass Python_ROOT_DIR as a hint
 
@@ -31,15 +31,16 @@ if (Python3_FOUND)
 
 	if(WIN32)
 		if (NOT Python3_LIBRARY_DEBUG)
-			#Appveyor does not seem to have the debug libraries copy release to debug
+			#Appveyor does not have the debug libraries. Point to our copy that we have put into GIT. This issue will be fixed on next Image Release
+			# Remove this and Python37_d.lib from GIT when the Appveyor image catches up.
+
 			message("Found Python Release Library but no Debug Library ${Python3_LIBRARY_RELEASE}")
 			get_filename_component(LibFileName "${Python3_LIBRARY_RELEASE}" NAME_WE)
-			#get_filename_component(LibFileDir "${Python3_LIBRARY_RELEASE}" DIRECTORY)
-			message("Target Filename: ${CMAKE_BINARY_DIR}/${LibFileName}_d.lib")
-			execute_process(
-				COMMAND ${CMAKE_COMMAND} -E copy "${Python3_LIBRARY_RELEASE}" "${CMAKE_BINARY_DIR}/${LibFileName}_d.lib"  
-			)
-			set(Python3_LIBRARIES "optimized;${Python3_LIBRARY_RELEASE};debug;${CMAKE_BINARY_DIR}/${LibFileName}_d.lib")
+			message("Target Filename: ${CMAKE_SOURCE_DIR}/${LibFileName}_d.lib")
+#			execute_process(
+#				COMMAND ${CMAKE_COMMAND} -E copy "${Python3_LIBRARY_RELEASE}" "${CMAKE_BINARY_DIR}/${LibFileName}_d.lib"  
+#			)
+			set(Python3_LIBRARIES "optimized;${Python3_LIBRARY_RELEASE};debug;${CMAKE_SOURCE_DIR}/PyPort/${LibFileName}_d.lib")
 		endif()
 	endif()
 
@@ -52,12 +53,6 @@ else()
 endif()
 
 message("Found Python Include Dirs ${Python3_INCLUDE_DIRS} ")
-#Debug missing include files?
-execute_process(
-			COMMAND dir ${Python3_INCLUDE_DIRS}
-			OUTPUT_VARIABLE copyresult
-		)
-		message("Dir Result :${copyresult}")
 message("Found Python Libraries ${Python3_LIBRARIES} ")
 
 include_directories(

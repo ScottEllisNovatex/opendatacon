@@ -76,7 +76,7 @@ install:
     if [ "$DOCKER_BUILD" == "Rpi" ]; then
       sudo apt-get install -y qemu-user qemu-user-static g++-arm-linux-gnueabihf
       DOCK=$(docker run -d -v $(pwd):/mnt/build -v /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static --rm -ti raspbian/jessie:latest)
-      docker exec -i $DOCK sh -c "apt-get update && apt-get install -y libmodbus-dev libmicrohttpd-dev socat psmisc python3"
+      docker exec -i $DOCK sh -c "apt-get update && apt-get install -y libmodbus-dev libmicrohttpd-dev socat psmisc python3.6"
       mkdir sysroot
       docker exec -i $DOCK cp -a /usr /mnt/build/sysroot/
       export SYSROOT=$(pwd)/sysroot/
@@ -91,8 +91,11 @@ install:
         curl -O http://packages.psychotic.ninja/6/plus/x86_64/RPMS//libmodbus-devel-3.0.6-2.el6.psychotic.x86_64.rpm
         curl -O http://packages.psychotic.ninja/6/plus/x86_64/RPMS//libmodbus-3.0.6-2.el6.psychotic.x86_64.rpm
         rpm -i libmodbus-3.0.6-2.el6.psychotic.x86_64.rpm
-        rpm -i libmodbus-devel-3.0.6-2.el6.psychotic.x86_64.rpm
-        yum install -y libmicrohttpd-devel socat python3.5-dev
+        rpm -i libmodbus-devel-3.0.6-2.el6.psychotic.x86_64.rpm       
+        yum install -y libmicrohttpd-devel socat
+        yum-config-manager --enable ol6_latest
+        yum install scl-utils
+        yum install -y rh-python36
       '
       sudo pip install gdown
       gdown "https://drive.google.com/uc?export=download&id=1GXu7aRCGviXEA3RM5slDKIC8yGIr4KW3"

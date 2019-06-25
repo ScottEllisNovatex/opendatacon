@@ -37,10 +37,13 @@ if (Python3_FOUND)
 		message("Target Filename: ${LibFileDir}/${LibFileName}_d.lib")
 		execute_process(
 			COMMAND copy "${Python3_LIBRARY_RELEASE}" "${LibFileDir}/${LibFileName}_d.lib"
+		)
+		execute_process(
+			COMMAND dir "${LibFileDir}"
 			OUTPUT_VARIABLE copyresult
 		)
-		message("Copy Result :${copyresult}")
-		find_package(Python3 COMPONENTS Development)	# Repeat now both libs are there...
+		message("Dir Result :${copyresult}")
+		set(Python3_LIBRARIES "optimized;${Python3_LIBRARY_RELEASE};debug;${LibFileDir}/${LibFileName}_d.lib")
 	endif()
 
 else()
@@ -52,6 +55,11 @@ else()
 endif()
 
 message("Found Python Include Dirs ${Python3_INCLUDE_DIRS} ")
+execute_process(
+			COMMAND dir ${Python3_INCLUDE_DIRS}
+			OUTPUT_VARIABLE copyresult
+		)
+		message("Dir Result :${copyresult}")
 message("Found Python Libraries ${Python3_LIBRARIES} ")
 
 include_directories(

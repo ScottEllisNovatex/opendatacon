@@ -28,22 +28,24 @@ find_package(Python3 COMPONENTS Development)	# The new way of doing things, can 
 
 if (Python3_FOUND) 
 	message("Python3 Found")
-	if (NOT Python3_LIBRARY_DEBUG)
-		#Appveyor does not seem to have the debug libraries copy release to debug andtry again - very hacky. Version 37 dependent...
-		# need to extract the non-lib part of the name
-		message("Found Python Release Library but no Debug Library ${Python3_LIBRARY_RELEASE}")
-		get_filename_component(LibFileName "${Python3_LIBRARY_RELEASE}" NAME_WE)
-		get_filename_component(LibFileDir "${Python3_LIBRARY_RELEASE}" DIRECTORY)
-		message("Target Filename: ${LibFileDir}/${LibFileName}_d.lib")
-		execute_process(
-			COMMAND copy "${Python3_LIBRARY_RELEASE}" "${LibFileDir}/${LibFileName}_d.lib"
-		)
-		execute_process(
-			COMMAND dir "${LibFileDir}"
-			OUTPUT_VARIABLE copyresult
-		)
-		message("Dir Result :${copyresult}")
-		set(Python3_LIBRARIES "optimized;${Python3_LIBRARY_RELEASE};debug;${LibFileDir}/${LibFileName}_d.lib")
+
+	if(WIN32)
+		if (NOT Python3_LIBRARY_DEBUG)
+			#Appveyor does not seem to have the debug libraries copy release to debug
+			message("Found Python Release Library but no Debug Library ${Python3_LIBRARY_RELEASE}")
+			get_filename_component(LibFileName "${Python3_LIBRARY_RELEASE}" NAME_WE)
+			get_filename_component(LibFileDir "${Python3_LIBRARY_RELEASE}" DIRECTORY)
+			message("Target Filename: ${LibFileDir}/${LibFileName}_d.${LibFileExt}")
+			execute_process(
+				COMMAND copy "${Python3_LIBRARY_RELEASE}" "./${LibFileName}_d.lib"
+			)
+			execute_process(
+				COMMAND dir 
+				OUTPUT_VARIABLE copyresult
+			)
+			message("Dir Result :${copyresult}")
+			set(Python3_LIBRARIES "optimized;${Python3_LIBRARY_RELEASE};debug;./${LibFileName}_d.lib")
+		endif()
 	endif()
 
 else()
@@ -55,6 +57,7 @@ else()
 endif()
 
 message("Found Python Include Dirs ${Python3_INCLUDE_DIRS} ")
+#Debug missing include files?
 execute_process(
 			COMMAND dir ${Python3_INCLUDE_DIRS}
 			OUTPUT_VARIABLE copyresult

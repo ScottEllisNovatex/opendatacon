@@ -35,7 +35,7 @@ if (Python3_FOUND)
 			message("Found Python Release Library but no Debug Library ${Python3_LIBRARY_RELEASE}")
 			get_filename_component(LibFileName "${Python3_LIBRARY_RELEASE}" NAME_WE)
 			get_filename_component(LibFileDir "${Python3_LIBRARY_RELEASE}" DIRECTORY)
-			message("Target Filename: ${LibFileDir}/${LibFileName}_d.${LibFileExt}")
+			message("Target Filename: ${LibFileDir}/${LibFileName}_d.lib")
 			execute_process(
 				COMMAND copy "${Python3_LIBRARY_RELEASE}" "./${LibFileName}_d.lib"
 			)

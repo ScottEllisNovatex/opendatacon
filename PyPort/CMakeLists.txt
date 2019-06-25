@@ -34,21 +34,12 @@ if (Python3_FOUND)
 			#Appveyor does not seem to have the debug libraries copy release to debug
 			message("Found Python Release Library but no Debug Library ${Python3_LIBRARY_RELEASE}")
 			get_filename_component(LibFileName "${Python3_LIBRARY_RELEASE}" NAME_WE)
-			get_filename_component(LibFileDir "${Python3_LIBRARY_RELEASE}" DIRECTORY)
-			message("Target Filename: ${LibFileDir}/${LibFileName}_d.lib")
+			#get_filename_component(LibFileDir "${Python3_LIBRARY_RELEASE}" DIRECTORY)
+			message("Target Filename: ${CMAKE_BINARY_DIR}/${LibFileName}_d.lib")
 			execute_process(
-				COMMAND xcopy "${Python3_LIBRARY_RELEASE}" "./${LibFileName}_d.lib" /F/Y
-				WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-				OUTPUT_VARIABLE xcopyresult	
+				COMMAND ${CMAKE_COMMAND} -E copy "${Python3_LIBRARY_RELEASE}" "${CMAKE_BINARY_DIR}/${LibFileName}_d.lib"  
 			)
-			message("XCopy Result :${xcopyresult}")
-			execute_process(
-				COMMAND dir 
-				WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-				OUTPUT_VARIABLE copyresult
-			)
-			message("Dir Result :${copyresult}")
-			set(Python3_LIBRARIES "optimized;${Python3_LIBRARY_RELEASE};debug;${CMAKE_SOURCE_DIR}/${LibFileName}_d.lib")
+			set(Python3_LIBRARIES "optimized;${Python3_LIBRARY_RELEASE};debug;${CMAKE_BINARY_DIR}/${LibFileName}_d.lib")
 		endif()
 	endif()
 

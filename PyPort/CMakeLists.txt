@@ -37,14 +37,18 @@ if (Python3_FOUND)
 			get_filename_component(LibFileDir "${Python3_LIBRARY_RELEASE}" DIRECTORY)
 			message("Target Filename: ${LibFileDir}/${LibFileName}_d.lib")
 			execute_process(
-				COMMAND copy "${Python3_LIBRARY_RELEASE}" "./${LibFileName}_d.lib"
+				COMMAND xcopy "${Python3_LIBRARY_RELEASE}" "./${LibFileName}_d.lib" /F/Y
+				WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+				OUTPUT_VARIABLE xcopyresult
+				message("XCopy Result :${xcopyresult}")
 			)
 			execute_process(
 				COMMAND dir 
+				WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 				OUTPUT_VARIABLE copyresult
 			)
 			message("Dir Result :${copyresult}")
-			set(Python3_LIBRARIES "optimized;${Python3_LIBRARY_RELEASE};debug;./${LibFileName}_d.lib")
+			set(Python3_LIBRARIES "optimized;${Python3_LIBRARY_RELEASE};debug;${CMAKE_SOURCE_DIR}/${LibFileName}_d.lib")
 		endif()
 	endif()
 

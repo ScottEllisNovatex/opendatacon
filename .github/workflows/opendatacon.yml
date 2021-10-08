@@ -6,7 +6,7 @@ on:
       - '**' # matches every branch
 
 jobs:
-  opendatacon build matrix:
+  opendatacon-build-matrix:
   
     strategy:
       matrix:

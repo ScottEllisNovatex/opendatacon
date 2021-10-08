@@ -1,10 +1,13 @@
+name: opendatacon workflow
+
+on:
+  push:
+    branches:
+      - '**' # matches every branch
+
 jobs:
   opendatacon build matrix:
-    on:
-      push:
-        branches:
-          - '**' # matches every branch
-
+  
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]

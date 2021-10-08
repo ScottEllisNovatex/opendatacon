@@ -1,12 +1,20 @@
 jobs:
   opendatacon build matrix:
+    on:
+      push:
+        branches:
+          - '**' # matches every branch
+
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
         build-type: [Release,Debug]
+        
     runs-on: ${{ matrix.os }}
+    
     env:
       BUILD_TYPE: ${{ matrix.build-type }}
+    
     steps:
     - uses: actions/checkout@v2
 

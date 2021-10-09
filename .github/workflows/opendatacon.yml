@@ -20,9 +20,9 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
-    if: ${{ matrix.os == 'oel' }}
-      container:
-        image: library/oraclelinux:7.6
+    #if: ${{ matrix.os == 'oel' }}
+    container:
+      image: library/oraclelinux:7.6
 
     env:
       BUILD_TYPE: ${{ matrix.build-type }}

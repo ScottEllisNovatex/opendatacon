@@ -85,7 +85,7 @@ jobs:
     - name: Start run wrapper
       run: |
         ls -alh
-        echo '#!/bin/bash' >> run.sh
+        echo '#!/bin/bash' >> $HOME/run.sh
 
     - if: contains(matrix.docker, 'oracle')
       name: Setup OEL7 Environment
@@ -111,24 +111,24 @@ jobs:
         yum install -y rh-python36 rh-python36-python-devel rh-git218
         echo 'TOOLCHAIN_OPT=-DPYTHON_HOME=/opt/rh/rh-python36/root/usr -DOPENSSL_ROOT_DIR=/opt/openssl-root -DADD_LIBS=z' >> $GITHUB_ENV
         echo 'SYSVER_OPT=-DCMAKE_SYSTEM_VERSION=oel7' >> $GITHUB_ENV
-        echo 'source scl_source enable rh-python36' >> run.sh
-        echo 'source scl_source enable devtoolset-8' >> run.sh
-        echo 'source scl_source enable rh-git218' >> run.sh
+        echo 'source scl_source enable rh-python36' >> $HOME/run.sh
+        echo 'source scl_source enable devtoolset-8' >> $HOME/run.sh
+        echo 'source scl_source enable rh-git218' >> $HOME/run.sh
         echo '#!/bin/bash' >> /bin/git
-        echo "$(pwd)/run.sh git \"\$@\"" >> /bin/git
+        echo "$HOME/run.sh git \"\$@\"" >> /bin/git
         chmod +x /bin/git
 
     - name: Finish run wrapper
       run: |
-        echo 'exec "$@"' >> run.sh
-        chmod +x run.sh
+        echo 'exec "$@"' >> $HOME/run.sh
+        chmod +x $HOME/run.sh
     
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
 
     - name: Configure CMake
-      run: ./run.sh cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
+      run: $HOME/run.sh cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
 
     - name: Build
       working-directory: ${{github.workspace}}/build

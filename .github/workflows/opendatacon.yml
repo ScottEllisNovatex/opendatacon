@@ -13,48 +13,80 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         build-type: [Release,Debug]
-        
+        docker: [none]
+        include:
+          os: ubuntu-latest
+          docker: oel
+
     runs-on: ${{ matrix.os }}
-    
+
+    if: matrix.os == 'oel'
+      container:
+        image: library/oraclelinux:7.6
+
     env:
       BUILD_TYPE: ${{ matrix.build-type }}
       INSTALL_PREFIX: ${{github.workspace}}/build/install
       LOG_LVL: error
-    
+
     steps:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
-        
+
     - if: contains(matrix.os,'macos')
       name: Setup MacOS Environment
       run: |
         brew install libmodbus socat openssl
         echo 'TOOLCHAIN_OPT=-DPACKAGE_DNP3=OFF -DPACKAGE_LIBMODBUS=OFF -DPACKAGE_PYTHON=OFF -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl@3' >> $GITHUB_ENV
-        
-    - if: contains(matrix.os,'ubuntu')
+
+    - if: contains(matrix.os,'ubuntu') && matrix.docker == 'none'
       name: Setup Ubuntu Environment
       run: |
         sudo apt-get install -y libmodbus-dev libssl-dev socat
         echo 'SYSVER_OPT=-DCMAKE_SYSTEM_VERSION=generic' >> $GITHUB_ENV
 
+    - if: matrix.docker == 'none'
+      name: Setup OEL7 Environment
+      run: |
+        yum install -y oracle-softwarecollection-release-el7
+        /usr/bin/ol_yum_configure.sh
+        yum repolist
+        yum install -y applydeltarpm
+        yum install -y scl-utils glibc-devel iso-codes redhat-rpm-config libmicrohttpd make devtoolset-8-gcc-c++ cmake3 git file openssl11 openssl11-devel openssl11-static
+        ln -s /usr/bin/cmake3 /bin/cmake
+        mkdir -p /opt/openssl-root
+        ln -s /usr/include/openssl11 /opt/openssl-root/include
+        ln -s /usr/lib64/openssl11 /opt/openssl-root/lib
+        #Extras that aren-t yum-able
+        curl -O https://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/l/libmodbus-devel-3.0.8-1.el7.x86_64.rpm
+        curl -O https://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/l/libmodbus-3.0.8-1.el7.x86_64.rpm
+        rpm -i libmodbus-3.0.8-1.el7.x86_64.rpm
+        rpm -i libmodbus-devel-3.0.8-1.el7.x86_64.rpm    
+        # To get Python3.6 we need scl-util-build tools
+        curl -O http://public-yum.oracle.com/repo/OracleLinux/OL7/optional/developer/x86_64/getPackage/scl-utils-build-20130529-19.el7.x86_64.rpm
+        rpm -i scl-utils-build-20130529-19.el7.x86_64.rpm
+        curl -O https://public-yum.oracle.com/repo/OracleLinux/OL7/optional/latest/x86_64/getPackage/libmicrohttpd-devel-0.9.33-2.el7.x86_64.rpm
+        rpm -i libmicrohttpd-devel-0.9.33-2.el7.x86_64.rpm
+        yum install -y rh-python36 rh-python36-python-devel
+
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
-      
+
     - name: Build
       working-directory: ${{github.workspace}}/build
       run: make -j8
-      
+
     - name: Package
       working-directory: ${{github.workspace}}/build
       run: |
         make package
         tar -tzvf *.tar.gz
-      
+
     - name: Install
       working-directory: ${{github.workspace}}/build
       run: make install
-      
+
     - name: Test
       working-directory: ${{github.workspace}}/build
       run: |
@@ -65,6 +97,5 @@ jobs:
         install/bin/CBPort_tests ${{env.LOG_LVL}} -d yes
         install/bin/PyPort_tests ${{env.LOG_LVL}} -d yes
         install/bin/Integration_tests ${{env.LOG_LVL}} -d yes
-        
-        
+
         

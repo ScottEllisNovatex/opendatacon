@@ -17,14 +17,26 @@ jobs:
     
     env:
       BUILD_TYPE: ${{ matrix.build-type }}
+      INSTALL_PREFIX: "${{github.workspace}}/build/install"
+      SYSVER_OPT="-DCMAKE_SYSTEM_VERSION=generic
     
     steps:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
+        
+    - if: contains(['macos'],matrix.os)
+      name: Set MacOS env
+      env:
+        TOOLCHAIN_OPT: -DPACKAGE_DNP3=OFF -DPACKAGE_LIBMICROHTTPD=OFF -DPACKAGE_LIBMODBUS=OFF -DPACKAGE_PYTHON=OFF -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl
+        
+    - if: contains(['ubuntu'],matrix.os)
+      name: Set Ubuntu env
+      env:
+        SYSVER_OPT: -DCMAKE_SYSTEM_VERSION=generic
 
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DTESTS=ON -DWEBUI=ON -DJSONPORT=ON -DSIMPORT=ON -DMD3PORT=ON -DCBPORT=ON -DCONSOLEUI=ON -DDNP3PORT=ON
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX $TOOLCHAIN_OPT $SYSVER_OPT -DTESTS=ON -DWEBUI=ON -DJSONPORT=ON -DSIMPORT=ON -DMD3PORT=ON -DCBPORT=ON -DCONSOLEUI=ON -DDNP3PORT=ON
       
     - name: Build
       working-directory: ${{github.workspace}}/build

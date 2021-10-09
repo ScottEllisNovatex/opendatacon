@@ -63,6 +63,7 @@ jobs:
         install/bin/SimPort_tests -d yes
         install/bin/MD3Port_tests ${{env.LOG_LVL}} -d yes
         install/bin/CBPort_tests ${{env.LOG_LVL}} -d yes
+        install/bin/PyPort_tests ${{env.LOG_LVL}} -d yes
         install/bin/Integration_tests ${{env.LOG_LVL}} -d yes
         
         

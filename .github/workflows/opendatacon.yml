@@ -20,7 +20,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
-    #if: ${{ matrix.os == 'oel' }}
+    if: ${{ matrix.os == 'oel' }}
     container:
       image: library/oraclelinux:7.6
 
@@ -46,7 +46,7 @@ jobs:
         sudo apt-get install -y libmodbus-dev libssl-dev socat
         echo 'SYSVER_OPT=-DCMAKE_SYSTEM_VERSION=generic' >> $GITHUB_ENV
 
-    - if: ${{ matrix.docker == 'none' }}
+    - if: ${{ matrix.docker == 'oel' }}
       name: Setup OEL7 Environment
       run: |
         yum install -y oracle-softwarecollection-release-el7

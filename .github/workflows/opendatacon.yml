@@ -130,17 +130,19 @@ jobs:
 
     - name: Build
       run: |
-        cd build 
+        echo $(pwd)
+        ls -alh
+        cd ${{github.workspace}}/build 
         $HOME/run.sh make -j8
 
     - name: Package
       run: |
-        cd build 
+        cd ${{github.workspace}}/build 
         $HOME/run.sh make package
 
     - name: Install
       run: |
-        cd build 
+        cd ${{github.workspace}}/build 
         $HOME/run.sh make install
 
     - name: Test

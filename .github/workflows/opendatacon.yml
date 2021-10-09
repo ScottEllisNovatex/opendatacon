@@ -83,9 +83,7 @@ jobs:
 
     steps:
     - name: Start run wrapper
-      run: |
-        ls -alh
-        echo '#!/bin/bash' >> $HOME/run.sh
+      run: echo '#!/bin/bash' >> $HOME/run.sh
 
     - if: contains(matrix.docker, 'oracle')
       name: Setup OEL7 Environment
@@ -128,27 +126,31 @@ jobs:
         fetch-depth: 0
 
     - name: Configure CMake
-      run: $HOME/run.sh cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
+      run: |
+        cd build 
+        $HOME/run.sh cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
 
     - name: Build
-      working-directory: ${{github.workspace}}/build
-      run: $HOME/run.sh make -j8
+      run: |
+        cd build 
+        $HOME/run.sh make -j8
 
     - name: Package
-      working-directory: ${{github.workspace}}/build
-      run: $HOME/run.sh make package
+      run: |
+        cd build 
+        $HOME/run.sh make package
 
     - name: Install
-      working-directory: ${{github.workspace}}/build
-      run: $HOME/run.sh make install
+      run: |
+        cd build 
+        $HOME/run.sh make install
 
     - name: Test
-      working-directory: ${{github.workspace}}/build
       run: |
-        install/bin/ODC_tests ${{env.LOG_LVL}} -d yes
-        install/bin/DNP3Port_tests ${{env.LOG_LVL}} -d yes
-        install/bin/SimPort_tests -d yes
-        install/bin/MD3Port_tests ${{env.LOG_LVL}} -d yes
-        install/bin/CBPort_tests ${{env.LOG_LVL}} -d yes
-        install/bin/PyPort_tests ${{env.LOG_LVL}} -d yes
-        install/bin/Integration_tests ${{env.LOG_LVL}} -d yes
+        build/install/bin/ODC_tests ${{env.LOG_LVL}} -d yes
+        build/install/bin/DNP3Port_tests ${{env.LOG_LVL}} -d yes
+        build/install/bin/SimPort_tests -d yes
+        build/install/bin/MD3Port_tests ${{env.LOG_LVL}} -d yes
+        build/install/bin/CBPort_tests ${{env.LOG_LVL}} -d yes
+        build/install/bin/PyPort_tests ${{env.LOG_LVL}} -d yes
+        build/install/bin/Integration_tests ${{env.LOG_LVL}} -d yes

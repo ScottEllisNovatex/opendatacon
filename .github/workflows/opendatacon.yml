@@ -87,7 +87,9 @@ jobs:
         fetch-depth: 0
         
     - name: Start run wrapper
-      run: echo '#!/bin/bash' >> run.sh
+      run: |
+        ls -alh
+        echo '#!/bin/bash' >> run.sh
 
     - if: contains(matrix.docker, 'oracle')
       name: Setup OEL7 Environment

@@ -46,7 +46,9 @@ jobs:
       
     - name: Package
       working-directory: ${{github.workspace}}/build
-      run: make package
+      run: |
+        make package
+        tar -tzvf *.tar.gz
       
     - name: Install
       working-directory: ${{github.workspace}}/build

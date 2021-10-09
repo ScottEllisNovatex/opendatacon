@@ -20,7 +20,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
-    if: matrix.os == 'oel'
+    if: ${{ matrix.os == 'oel' }}
       container:
         image: library/oraclelinux:7.6
 
@@ -40,13 +40,13 @@ jobs:
         brew install libmodbus socat openssl
         echo 'TOOLCHAIN_OPT=-DPACKAGE_DNP3=OFF -DPACKAGE_LIBMODBUS=OFF -DPACKAGE_PYTHON=OFF -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl@3' >> $GITHUB_ENV
 
-    - if: contains(matrix.os,'ubuntu') && matrix.docker == 'none'
+    - if: ${{ contains(matrix.os,'ubuntu') && matrix.docker == 'none' }}
       name: Setup Ubuntu Environment
       run: |
         sudo apt-get install -y libmodbus-dev libssl-dev socat
         echo 'SYSVER_OPT=-DCMAKE_SYSTEM_VERSION=generic' >> $GITHUB_ENV
 
-    - if: matrix.docker == 'none'
+    - if: ${{ matrix.docker == 'none' }}
       name: Setup OEL7 Environment
       run: |
         yum install -y oracle-softwarecollection-release-el7
@@ -97,5 +97,3 @@ jobs:
         install/bin/CBPort_tests ${{env.LOG_LVL}} -d yes
         install/bin/PyPort_tests ${{env.LOG_LVL}} -d yes
         install/bin/Integration_tests ${{env.LOG_LVL}} -d yes
-
-        

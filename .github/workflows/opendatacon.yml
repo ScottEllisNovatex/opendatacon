@@ -115,7 +115,7 @@ jobs:
         echo 'source scl_source enable devtoolset-8' >> run.sh
         echo 'source scl_source enable rh-git218' >> run.sh
         echo '#!/bin/bash' >> /bin/git
-        echo "$(pwd)/run.sh \"\$@\"" >> /bin/git
+        echo "$(pwd)/run.sh git \"\$@\"" >> /bin/git
         chmod +x /bin/git
 
     - name: Finish run wrapper

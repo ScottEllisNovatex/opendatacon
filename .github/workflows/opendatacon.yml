@@ -91,8 +91,6 @@ jobs:
       run: |
         yum install -y oracle-softwarecollection-release-el7
         /usr/bin/ol_yum_configure.sh
-        yum repolist
-        yum install -y applydeltarpm
         yum install -y scl-utils glibc-devel iso-codes redhat-rpm-config libmicrohttpd make devtoolset-8-gcc-c++ cmake3 git file openssl11 openssl11-devel openssl11-static
         ln -s /usr/bin/cmake3 /bin/cmake
         mkdir -p /opt/openssl-root
@@ -109,6 +107,10 @@ jobs:
         curl -O https://public-yum.oracle.com/repo/OracleLinux/OL7/optional/latest/x86_64/getPackage/libmicrohttpd-devel-0.9.33-2.el7.x86_64.rpm
         rpm -i libmicrohttpd-devel-0.9.33-2.el7.x86_64.rpm
         yum install -y rh-python36 rh-python36-python-devel
+        echo 'TOOLCHAIN_OPT=-DPYTHON_HOME=/opt/rh/rh-python36/root/usr -DOPENSSL_ROOT_DIR=/opt/openssl-root -DADD_LIBS=z' >> $GITHUB_ENV
+        echo 'SYSVER_OPT="-DCMAKE_SYSTEM_VERSION=oel7' >> $GITHUB_ENV
+        source scl_source enable rh-python36
+        source scl_source enable devtoolset-8
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON

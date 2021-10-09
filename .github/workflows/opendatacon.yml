@@ -18,7 +18,7 @@ jobs:
     env:
       BUILD_TYPE: ${{ matrix.build-type }}
       INSTALL_PREFIX: ${{github.workspace}}/build/install
-      SYSVER_OPT: -DCMAKE_SYSTEM_VERSION=generic
+      LOG_LVL: error
     
     steps:
     - uses: actions/checkout@v2
@@ -38,7 +38,7 @@ jobs:
         SYSVER_OPT: -DCMAKE_SYSTEM_VERSION=generic
 
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX $TOOLCHAIN_OPT $SYSVER_OPT -DTESTS=ON -DWEBUI=ON -DJSONPORT=ON -DSIMPORT=ON -DMD3PORT=ON -DCBPORT=ON -DCONSOLEUI=ON -DDNP3PORT=ON
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DTESTS=ON -DWEBUI=ON -DJSONPORT=ON -DSIMPORT=ON -DMD3PORT=ON -DCBPORT=ON -DCONSOLEUI=ON -DDNP3PORT=ON
       
     - name: Build
       working-directory: ${{github.workspace}}/build
@@ -48,3 +48,19 @@ jobs:
       working-directory: ${{github.workspace}}/build
       run: make package
       
+    - name: Install
+      working-directory: ${{github.workspace}}/build
+      run: make install
+      
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      run: |
+        install/bin/ODC_tests ${{env.LOG_LVL}} -d yes
+        install/bin/DNP3Port_tests ${{env.LOG_LVL}} -d yes
+        install/bin/SimPort_tests -d yes
+        install/bin/MD3Port_tests ${{env.LOG_LVL}} -d yes
+        install/bin/CBPort_tests ${{env.LOG_LVL}} -d yes
+        install/bin/Integration_tests ${{env.LOG_LVL}} -d yes
+        
+        
+        

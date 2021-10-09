@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         build-type: [Release,Debug]
 
     runs-on: ${{ matrix.os }}
@@ -37,12 +37,23 @@ jobs:
       run: |
         sudo apt-get install -y libmodbus-dev libssl-dev socat
         echo 'SYSVER_OPT=-DCMAKE_SYSTEM_VERSION=generic' >> $GITHUB_ENV
+    
+    - if: contains(matrix.os,'windows')
+      name: Setup Windows Environment
+      run: |
+        If (-not (Test-Path C:\libmodbus\libmodbus)){
+          Start-FileDownload "https://www.dropbox.com/s/iqf95y9x1x4ol36/libmodbus.zip?dl=1" -FileName libmodbus.zip
+          7z x -y libmodbus.zip
+          New-Item C:\libmodbus -ItemType Directory
+          Move-Item .\libmodbus C:\libmodbus\libmodbus
+        }
+        echo 'TOOLCHAIN_OPT=-G"Visual Studio 16 2019" -Ax64 -DCMAKE_CONFIGURATION_TYPES=${{env.BUILD_TYPE}} -DMODBUS_HOME=c:\libmodbus\libmodbus\windows64 -DPYTHON_HOME=C:\Python37-x64 -DOPENSSL_ROOT_DIR=C:\OpenSSL-v111-Win64' >> $env:GITHUB_ENV
 
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON -DCMAKE_BUILD_PARALLEL_LEVEL=8
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
 
     - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -DCMAKE_BUILD_PARALLEL_LEVEL=8
 
     - name: Package
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target package
@@ -122,7 +133,7 @@ jobs:
         fetch-depth: 0
 
     - name: Configure CMake
-      run: $HOME/run.sh cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON -DCMAKE_BUILD_PARALLEL_LEVEL=8
+      run: $HOME/run.sh cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
 
     - name: Build
       run: |

@@ -113,6 +113,7 @@ jobs:
 
     - name: Configure CMake
       run: |
+        which cmake
         source scl_source enable rh-python36
         source scl_source enable devtoolset-8
         cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON

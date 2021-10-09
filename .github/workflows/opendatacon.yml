@@ -47,7 +47,8 @@ jobs:
           New-Item C:\libmodbus -ItemType Directory
           Move-Item .\libmodbus C:\libmodbus\libmodbus
         }
-        echo 'TOOLCHAIN_OPT=-G"Visual Studio 16 2019" -Ax64 -DCMAKE_CONFIGURATION_TYPES=${{env.BUILD_TYPE}} -DMODBUS_HOME=c:\libmodbus\libmodbus\windows64' >> $env:GITHUB_ENV
+        Get-ChildItem -Path C:\ –Recurse
+        echo 'TOOLCHAIN_OPT=-G"Visual Studio 16 2019" -Ax64 -DCMAKE_CONFIGURATION_TYPES=${{env.BUILD_TYPE}} -DMODBUS_HOME=c:\libmodbus\libmodbus\windows64 -DPYTHON_HOME=C:\Python37 -DOPENSSL_ROOT_DIR=C:\OpenSSL-v111' >> $env:GITHUB_ENV
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON

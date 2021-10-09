@@ -39,30 +39,26 @@ jobs:
         echo 'SYSVER_OPT=-DCMAKE_SYSTEM_VERSION=generic' >> $GITHUB_ENV
 
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON -DCMAKE_BUILD_PARALLEL_LEVEL=8
 
     - name: Build
-      working-directory: ${{github.workspace}}/build
-      run: make -j8
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Package
-      working-directory: ${{github.workspace}}/build
-      run: make package
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target package
 
     - name: Install
-      working-directory: ${{github.workspace}}/build
-      run: make install
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target install
 
     - name: Test
-      working-directory: ${{github.workspace}}/build
       run: |
-        install/bin/ODC_tests ${{env.LOG_LVL}} -d yes
-        install/bin/DNP3Port_tests ${{env.LOG_LVL}} -d yes
-        install/bin/SimPort_tests -d yes
-        install/bin/MD3Port_tests ${{env.LOG_LVL}} -d yes
-        install/bin/CBPort_tests ${{env.LOG_LVL}} -d yes
-        install/bin/PyPort_tests ${{env.LOG_LVL}} -d yes
-        install/bin/Integration_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/bin/ODC_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/bin/DNP3Port_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/bin/SimPort_tests -d yes
+        ${{github.workspace}}/build/install/bin/MD3Port_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/bin/CBPort_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/bin/PyPort_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/bin/Integration_tests ${{env.LOG_LVL}} -d yes
 
   opendatacon-oel:
 
@@ -126,7 +122,7 @@ jobs:
         fetch-depth: 0
 
     - name: Configure CMake
-      run: $HOME/run.sh cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
+      run: $HOME/run.sh cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON -DCMAKE_BUILD_PARALLEL_LEVEL=8
 
     - name: Build
       run: |
@@ -147,10 +143,10 @@ jobs:
 
     - name: Test
       run: |
-        build/install/bin/ODC_tests ${{env.LOG_LVL}} -d yes
-        build/install/bin/DNP3Port_tests ${{env.LOG_LVL}} -d yes
-        build/install/bin/SimPort_tests -d yes
-        build/install/bin/MD3Port_tests ${{env.LOG_LVL}} -d yes
-        build/install/bin/CBPort_tests ${{env.LOG_LVL}} -d yes
-        build/install/bin/PyPort_tests ${{env.LOG_LVL}} -d yes
-        build/install/bin/Integration_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/bin/ODC_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/bin/DNP3Port_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/bin/SimPort_tests -d yes
+        ${{github.workspace}}/build/install/bin/MD3Port_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/bin/CBPort_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/bin/PyPort_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/bin/Integration_tests ${{env.LOG_LVL}} -d yes

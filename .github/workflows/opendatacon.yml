@@ -29,7 +29,7 @@ jobs:
       name: Setup MacOS Environment
       run: |
         brew install libmodbus socat openssl
-        echo 'TOOLCHAIN_OPT="-DPACKAGE_DNP3=OFF -DPACKAGE_LIBMODBUS=OFF -DPACKAGE_PYTHON=OFF -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl"' >> $GITHUB_ENV
+        echo 'TOOLCHAIN_OPT="-DPACKAGE_DNP3=OFF -DPACKAGE_LIBMODBUS=OFF -DPACKAGE_PYTHON=OFF -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl@3"' >> $GITHUB_ENV
         
     - if: contains(matrix.os,'ubuntu')
       name: Setup Ubuntu Environment

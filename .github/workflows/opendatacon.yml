@@ -15,8 +15,8 @@ jobs:
         build-type: [Release,Debug]
         docker: [none]
         include:
-          os: ubuntu-latest
-          docker: oel
+          - os: ubuntu-latest
+            docker: oel
 
     runs-on: ${{ matrix.os }}
 

@@ -71,7 +71,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         build-type: [Release,Debug]
-        docker: [library/oraclelinux:7.6]
+        docker: ['library/oraclelinux:7.6']
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.docker }}

@@ -110,11 +110,12 @@ jobs:
         rpm -i scl-utils-build-20130529-19.el7.x86_64.rpm
         curl -O https://public-yum.oracle.com/repo/OracleLinux/OL7/optional/latest/x86_64/getPackage/libmicrohttpd-devel-0.9.33-2.el7.x86_64.rpm
         rpm -i libmicrohttpd-devel-0.9.33-2.el7.x86_64.rpm
-        yum install -y rh-python36 rh-python36-python-devel
+        yum install -y rh-python36 rh-python36-python-devel rh-git218
         echo 'TOOLCHAIN_OPT=-DPYTHON_HOME=/opt/rh/rh-python36/root/usr -DOPENSSL_ROOT_DIR=/opt/openssl-root -DADD_LIBS=z' >> $GITHUB_ENV
         echo 'SYSVER_OPT=-DCMAKE_SYSTEM_VERSION=oel7' >> $GITHUB_ENV
         echo 'source scl_source enable rh-python36' >> run.sh
         echo 'source scl_source enable devtoolset-8' >> run.sh
+        echo 'source scl_source enable rh-git218' >> run.sh
 
     - name: Finish run wrapper
       run: |

@@ -25,13 +25,13 @@ jobs:
       with:
         fetch-depth: 0
         
-    - if: contains(['macos'],matrix.os)
+    - if: contains(matrix.os,'macos')
       name: Set MacOS env
       run: echo Set MacOS env
       env:
         TOOLCHAIN_OPT: -DPACKAGE_DNP3=OFF -DPACKAGE_LIBMICROHTTPD=OFF -DPACKAGE_LIBMODBUS=OFF -DPACKAGE_PYTHON=OFF -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl
         
-    - if: contains(['ubuntu'],matrix.os)
+    - if: contains(matrix.os,'ubuntu')
       name: Set Ubuntu env
       run: echo Set Ubuntu env
       env:

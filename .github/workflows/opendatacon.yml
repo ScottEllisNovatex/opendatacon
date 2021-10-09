@@ -47,7 +47,7 @@ jobs:
           New-Item C:\libmodbus -ItemType Directory
           Move-Item .\libmodbus C:\libmodbus\libmodbus
         }
-        Get-ChildItem -Path C:\ –Recurse | find "OpenSSL"
+        Get-Childitem –Path C:\ -Include *OpenSSL* -Recurse -ErrorAction SilentlyContinue
         echo 'TOOLCHAIN_OPT=-G"Visual Studio 16 2019" -Ax64 -DCMAKE_CONFIGURATION_TYPES=${{env.BUILD_TYPE}} -DMODBUS_HOME=c:\libmodbus\libmodbus\windows64 -DPYTHON_HOME=C:\hostedtoolcache\windows\Python\3.7.9\x64' >> $env:GITHUB_ENV
 
     - name: Configure CMake

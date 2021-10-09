@@ -82,10 +82,6 @@ jobs:
       LOG_LVL: error
 
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-        
     - name: Start run wrapper
       run: |
         ls -alh
@@ -97,7 +93,7 @@ jobs:
       run: |
         yum install -y oracle-softwarecollection-release-el7
         /usr/bin/ol_yum_configure.sh
-        yum install -y scl-utils glibc-devel iso-codes redhat-rpm-config libmicrohttpd make devtoolset-8-gcc-c++ cmake3 git file openssl11 openssl11-devel openssl11-static
+        yum install -y scl-utils glibc-devel iso-codes redhat-rpm-config libmicrohttpd make devtoolset-8-gcc-c++ cmake3 file openssl11 openssl11-devel openssl11-static
         ln -s /usr/bin/cmake3 /bin/cmake
         mkdir -p /opt/openssl-root
         ln -s /usr/include/openssl11 /opt/openssl-root/include
@@ -118,11 +114,18 @@ jobs:
         echo 'source scl_source enable rh-python36' >> run.sh
         echo 'source scl_source enable devtoolset-8' >> run.sh
         echo 'source scl_source enable rh-git218' >> run.sh
+        echo '#!/bin/bash' >> /bin/git
+        echo "$(pwd)/run.sh \"\$@\"" >> /bin/git
+        chmod +x /bin/git
 
     - name: Finish run wrapper
       run: |
         echo 'exec "$@"' >> run.sh
         chmod +x run.sh
+    
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
 
     - name: Configure CMake
       run: ./run.sh cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON

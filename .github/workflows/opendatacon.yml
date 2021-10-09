@@ -26,16 +26,16 @@ jobs:
         fetch-depth: 0
         
     - if: contains(matrix.os,'macos')
-      name: Set MacOS env
-      run: echo Set MacOS env
-      env:
-        TOOLCHAIN_OPT: -DPACKAGE_DNP3=OFF -DPACKAGE_LIBMICROHTTPD=OFF -DPACKAGE_LIBMODBUS=OFF -DPACKAGE_PYTHON=OFF -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl
+      name: Setup MacOS Environment
+      run: |
+        brew install libmodbus socat openssl
+        echo 'TOOLCHAIN_OPT="-DPACKAGE_DNP3=OFF -DPACKAGE_LIBMODBUS=OFF -DPACKAGE_PYTHON=OFF -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl"' >> $GITHUB_ENV
         
     - if: contains(matrix.os,'ubuntu')
-      name: Set Ubuntu env
-      run: echo Set Ubuntu env
-      env:
-        SYSVER_OPT: -DCMAKE_SYSTEM_VERSION=generic
+      name: Setup Ubuntu Environment
+      run: |
+        sudo apt-get install -y libssl-dev socat
+        echo 'SYSVER_OPT="-DCMAKE_SYSTEM_VERSION=generic"' >> $GITHUB_ENV
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DTESTS=ON -DWEBUI=ON -DJSONPORT=ON -DSIMPORT=ON -DMD3PORT=ON -DCBPORT=ON -DCONSOLEUI=ON -DDNP3PORT=ON

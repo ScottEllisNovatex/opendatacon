@@ -42,7 +42,7 @@ jobs:
       name: Setup Windows Environment
       run: |
         If (-not (Test-Path C:\libmodbus\libmodbus)){
-          Start-FileDownload "https://www.dropbox.com/s/iqf95y9x1x4ol36/libmodbus.zip?dl=1" -FileName libmodbus.zip
+          Invoke-WebRequest -OutFile libmodbus.zip "https://www.dropbox.com/s/iqf95y9x1x4ol36/libmodbus.zip?dl=1"
           7z x -y libmodbus.zip
           New-Item C:\libmodbus -ItemType Directory
           Move-Item .\libmodbus C:\libmodbus\libmodbus

@@ -19,9 +19,12 @@ jobs:
           - number: 64
             platform: x64
             gen_platform: -Ax64
-        include:
-          - os: windows-latest
-            build-type: [Release,Debug]
+          - number: 32
+            platform: x86
+            gen_platform: -AWin32
+            
+        exclude:
+          - os: macos-latest
             bits:
               - number: 32
                 platform: x86

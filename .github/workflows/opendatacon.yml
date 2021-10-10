@@ -217,8 +217,8 @@ jobs:
       - name: Find Artifacts
         run: echo "ASSETS=$(find ./ -name "*.exe" -o -name "*.sh" | tr '\n' ' ')" >> $GITHUB_ENV
         
-      - name Deploy Release
-        uses: meeDamian/githu-release@2.0
+      - name: Deploy Release
+        uses: meeDamian/github-release@2.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: >

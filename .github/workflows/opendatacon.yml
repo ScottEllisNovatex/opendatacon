@@ -175,9 +175,7 @@ jobs:
         echo 'exec "$@"' >> $HOME/run.sh
         chmod +x $HOME/run.sh
     
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
+    - uses: actions/checkout@v1
     - run: git fetch --force --tags
 
     - name: Configure CMake

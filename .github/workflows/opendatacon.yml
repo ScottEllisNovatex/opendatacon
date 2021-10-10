@@ -79,12 +79,13 @@ jobs:
         ${{github.workspace}}/build/install/${{env.BINDIR}}PyPort_tests ${{env.LOG_LVL}} -d yes
         ${{github.workspace}}/build/install/${{env.BINDIR}}Integration_tests ${{env.LOG_LVL}} -d yes
     
-    - uses: actions/upload-artifact@v2
-        with:
-          name: installers
-          path: |
-            ${{github.workspace}}/build/opendatacon-*.*.*-*-*-*-*-*.sh
-            ${{github.workspace}}/build/opendatacon-*.*.*-*-*-*-*-*.exe
+    - name: Upload
+      uses: actions/upload-artifact@v2
+      with:
+        name: installers
+        path: |
+          ${{github.workspace}}/build/opendatacon-*.*.*-*-*-*-*-*.sh
+          ${{github.workspace}}/build/opendatacon-*.*.*-*-*-*-*-*.exe
 
   opendatacon-docker:
 
@@ -171,12 +172,13 @@ jobs:
         echo 'skipping: ${{github.workspace}}/build/install/bin/PyPort_tests ${{env.LOG_LVL}} -d yes'
         ${{github.workspace}}/build/install/bin/Integration_tests ${{env.LOG_LVL}} -d yes
         
-    - uses: actions/upload-artifact@v2
-        with:
-          name: installers
-          path: |
-            ${{github.workspace}}/build/opendatacon-*.*.*-*-*-*-*-*.sh
-            ${{github.workspace}}/build/opendatacon-*.*.*-*-*-*-*-*.exe
+    - name: Upload
+      uses: actions/upload-artifact@v2
+      with:
+        name: installers
+        path: |
+          ${{github.workspace}}/build/opendatacon-*.*.*-*-*-*-*-*.sh
+          ${{github.workspace}}/build/opendatacon-*.*.*-*-*-*-*-*.exe
             
   opendatacon-deploy:
     if: contains(github.ref, "tag")

@@ -55,7 +55,7 @@ jobs:
           Move-Item .\libmodbus C:\libmodbus\libmodbus
         }
         #hack because debug lib aint available!
-        Copy-Item -Path C:/hostedtoolcache/windows/Python/3.7.9/x64/libs/python37.lib -Destination C:/hostedtoolcache/windows/Python/3.7.9/x64/libs/python37_d.lib
+        Copy-Item -Path ${{github.workspace}}/Code/Ports/PyPort/x64/python37_d.lib -Destination C:/hostedtoolcache/windows/Python/3.7.9/x64/libs/
         echo 'TOOLCHAIN_OPT=-G"Visual Studio 16 2019" -Ax64 -DCMAKE_CONFIGURATION_TYPES=${{env.BUILD_TYPE}} -DMODBUS_HOME=c:\libmodbus\libmodbus\windows64 -DPYTHON_HOME=C:\hostedtoolcache\windows\Python\3.7.9\x64' >> $env:GITHUB_ENV
 
     - name: Configure CMake

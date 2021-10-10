@@ -97,7 +97,7 @@ if(NOT USE_PYTHON_SUBMODULE)
 	if(WIN32)
 		if (NOT PYTHON_LIBRARY_DEBUG)
 			message("Warning: can't find Python debug lib, using release version here too")
-			set(PYTHON_LIBRARY_DEBUG PYTHON_LIBRARY_RELEASE)
+			set(PYTHON_LIBRARY_DEBUG ${PYTHON_LIBRARY_RELEASE})
 		endif()
 	endif()
 

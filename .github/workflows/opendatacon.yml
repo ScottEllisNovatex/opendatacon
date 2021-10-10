@@ -34,17 +34,17 @@ jobs:
       LOG_LVL: error
 
     steps:
-    - if: matrix.bits == 32
+    - if: matrix.bits == 32 && contains(matrix.os,'windows')
       name: Set 32-bit env
       run: |
-        echo 'BITPLAT=x86' >> $GITHUB_ENV
-        echo 'BITGEN=-AWin32' >> $GITHUB_ENV
+        echo 'BITPLAT=x86' >> $env:GITHUB_ENV
+        echo 'BITGEN=-AWin32' >> $env:GITHUB_ENV
         
-    - if: matrix.bits == 64
+    - if: matrix.bits == 64 && contains(matrix.os,'windows')
       name: Set 64-bit env
       run: |
-        echo 'BITPLAT=x64' >> $GITHUB_ENV
-        echo 'BITGEN=-Ax64' >> $GITHUB_ENV
+        echo 'BITPLAT=x64' >> $env:GITHUB_ENV
+        echo 'BITGEN=-Ax64' >> $env:GITHUB_ENV
       
     - uses: actions/checkout@v2
       with:

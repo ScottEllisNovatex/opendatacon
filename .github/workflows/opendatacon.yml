@@ -6,7 +6,7 @@ on:
       - '**' # matches every branch
 
 jobs:
-  opendatacon-build-matrix:
+  opendatacon-native:
   
     strategy:
       fail-fast: false
@@ -31,12 +31,14 @@ jobs:
       run: |
         brew install libmodbus socat openssl
         echo 'TOOLCHAIN_OPT=-DPACKAGE_DNP3=OFF -DPACKAGE_LIBMODBUS=OFF -DPACKAGE_PYTHON=OFF -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl@3' >> $GITHUB_ENV
+        echo 'BINDIR=bin/' >> $GITHUB_ENV
 
     - if: contains(matrix.os,'ubuntu')
       name: Setup Ubuntu Environment
       run: |
         sudo apt-get install -y libmodbus-dev libssl-dev socat
         echo 'SYSVER_OPT=-DCMAKE_SYSTEM_VERSION=generic' >> $GITHUB_ENV
+        echo 'BINDIR=bin/' >> $GITHUB_ENV
     
     - if: contains(matrix.os,'windows')
       name: Setup Windows Environment
@@ -63,15 +65,23 @@ jobs:
 
     - name: Test
       run: |
-        ${{github.workspace}}/build/install/bin/ODC_tests ${{env.LOG_LVL}} -d yes
-        ${{github.workspace}}/build/install/bin/DNP3Port_tests ${{env.LOG_LVL}} -d yes
-        ${{github.workspace}}/build/install/bin/SimPort_tests -d yes
-        ${{github.workspace}}/build/install/bin/MD3Port_tests ${{env.LOG_LVL}} -d yes
-        ${{github.workspace}}/build/install/bin/CBPort_tests ${{env.LOG_LVL}} -d yes
-        ${{github.workspace}}/build/install/bin/PyPort_tests ${{env.LOG_LVL}} -d yes
-        ${{github.workspace}}/build/install/bin/Integration_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/${{env.BINDIR}}ODC_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/${{env.BINDIR}}DNP3Port_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/${{env.BINDIR}}SimPort_tests -d yes
+        ${{github.workspace}}/build/install/${{env.BINDIR}}MD3Port_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/${{env.BINDIR}}CBPort_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/${{env.BINDIR}}PyPort_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/${{env.BINDIR}}Integration_tests ${{env.LOG_LVL}} -d yes
+    
+    - name: Upload
+      uses: actions/upload-artifact@v2
+        with:
+          name: installers
+          path: |
+            ${{github.workspace}}/build/opendatacon-*.*.*-*-*-*-*-*.sh
+            ${{github.workspace}}/build/opendatacon-*.*.*-*-*-*-*-*.exe
 
-  opendatacon-oel:
+  opendatacon-docker:
 
     strategy:
       fail-fast: false
@@ -87,6 +97,7 @@ jobs:
       BUILD_TYPE: ${{ matrix.build-type }}
       INSTALL_PREFIX: ${{github.workspace}}/build/install
       LOG_LVL: error
+      BINDIR: bin/
 
     steps:
     - name: Start run wrapper
@@ -136,21 +147,13 @@ jobs:
       run: $HOME/run.sh cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
 
     - name: Build
-      run: |
-        echo $(pwd)
-        ls -alh
-        cd ${{github.workspace}}/build 
-        $HOME/run.sh make -j8
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --parallel 8
 
     - name: Package
-      run: |
-        cd ${{github.workspace}}/build 
-        $HOME/run.sh make package
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target package
 
     - name: Install
-      run: |
-        cd ${{github.workspace}}/build 
-        $HOME/run.sh make install
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target install
 
     - name: Test
       run: |
@@ -159,5 +162,29 @@ jobs:
         ${{github.workspace}}/build/install/bin/SimPort_tests -d yes
         ${{github.workspace}}/build/install/bin/MD3Port_tests ${{env.LOG_LVL}} -d yes
         ${{github.workspace}}/build/install/bin/CBPort_tests ${{env.LOG_LVL}} -d yes
-        ${{github.workspace}}/build/install/bin/PyPort_tests ${{env.LOG_LVL}} -d yes
+        echo 'skipping: ${{github.workspace}}/build/install/bin/PyPort_tests ${{env.LOG_LVL}} -d yes'
         ${{github.workspace}}/build/install/bin/Integration_tests ${{env.LOG_LVL}} -d yes
+        
+    - name: Upload
+      uses: actions/upload-artifact@v2
+        with:
+          name: installers
+          path: |
+            ${{github.workspace}}/build/opendatacon-*.*.*-*-*-*-*-*.sh
+            ${{github.workspace}}/build/opendatacon-*.*.*-*-*-*-*-*.exe
+            
+  opendatacon-deploy:
+    needs: opendatacon-native
+    needs: opendatacon-docker
+    runs-on: macOS-latest
+    steps:
+      - name: Download Installers
+        uses: actions/download-artifact@v2
+        with:
+          name: installers
+      - name: Print Artifacts
+        run: ls -alh
+        
+        
+    
+    

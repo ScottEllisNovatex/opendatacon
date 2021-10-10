@@ -182,8 +182,7 @@ jobs:
             
   opendatacon-deploy:
     if: contains(github.ref, 'tag')
-    needs: opendatacon-native
-    needs: opendatacon-docker
+    needs: [opendatacon-native,opendatacon-docker]
     runs-on: macOS-latest
     steps:
       - name: Download Installers

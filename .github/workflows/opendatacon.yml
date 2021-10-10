@@ -69,7 +69,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target install
 
     - name: Test
-      if: !contains(github.ref, "tag")
+      if: ${{ !contains(github.ref, "tag") }}
       run: |
         ${{github.workspace}}/build/install/${{env.BINDIR}}ODC_tests ${{env.LOG_LVL}} -d yes
         ${{github.workspace}}/build/install/${{env.BINDIR}}DNP3Port_tests ${{env.LOG_LVL}} -d yes
@@ -162,7 +162,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target install
 
     - name: Test
-      if: !contains(github.ref, "tag")
+      if: ${{ !contains(github.ref, "tag") }}
       run: |
         ${{github.workspace}}/build/install/bin/ODC_tests ${{env.LOG_LVL}} -d yes
         ${{github.workspace}}/build/install/bin/DNP3Port_tests ${{env.LOG_LVL}} -d yes

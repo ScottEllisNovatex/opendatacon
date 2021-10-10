@@ -12,6 +12,7 @@ jobs:
   
     strategy:
       fail-fast: false
+      
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         build-type: [Release,Debug]
@@ -19,12 +20,16 @@ jobs:
           - number: 64
             platform: x64
             gen_platform: -Ax64
-          - number: 32
-            platform: x86
-            gen_platform: -AWin32
             
-        exclude:
-          - os: macos-latest
+        include:
+          - os: macos-windows-latest
+            build-type: Release
+            bits:
+              - number: 32
+                platform: x86
+                gen_platform: -AWin32
+          - os: macos-windows-latest
+            build-type: Debug
             bits:
               - number: 32
                 platform: x86

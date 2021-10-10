@@ -122,8 +122,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.docker }}
-      volumes:
-        - ${{ github.workspace }}:${{ github.workspace }}
 
     env:
       BUILD_TYPE: ${{ matrix.build-type }}
@@ -167,7 +165,6 @@ jobs:
     - if: contains(matrix.docker, 'i386')
       name: Setup i386 Environment
       run: |
-        cat /etc/*release | grep ^ID
         apt-get update
         apt-get install -y libmodbus-dev socat psmisc libc6-dev openssl libssl-dev
         apt-get install -y python3.6 python3.6-dev g++ cmake git make binutils
@@ -178,7 +175,10 @@ jobs:
         chmod +x $HOME/run.sh
     
     - uses: actions/checkout@v1
-    - run: git fetch --force --tags
+    - run: |
+        pwd
+        ls -alh 
+        git fetch --force --tags
 
     - name: Configure CMake
       run: $HOME/run.sh cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON

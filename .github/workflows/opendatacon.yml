@@ -205,7 +205,7 @@ jobs:
         $HOME/run.sh ${{github.workspace}}/build/install/${{env.BINDIR}}Integration_tests ${{env.LOG_LVL}} -d yes
         
     - name: Find Installer
-        run: echo "INSTALLER_PATH=$(find ./ -name "opendatacon-*.*.*-*-*-*-*-*.sh")" >> $GITHUB_ENV
+      run: echo "INSTALLER_PATH=$(find ./ -name "opendatacon-*.*.*-*-*-*-*-*.sh")" >> $GITHUB_ENV
         
     - name: Upload
       uses: actions/upload-artifact@v1

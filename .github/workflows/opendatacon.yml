@@ -165,6 +165,7 @@ jobs:
     - if: contains(matrix.docker, 'i386')
       name: Setup i386 Environment
       run: |
+        apt-get update
         apt-get install -y gpg
         wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
         apt-add-repository "deb https://apt.kitware.com/ubuntu/ bionic main"

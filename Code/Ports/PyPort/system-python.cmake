@@ -96,18 +96,8 @@ if(NOT USE_PYTHON_SUBMODULE)
 
 	if(WIN32)
 		if (NOT PYTHON_LIBRARY_DEBUG)
-			#FIXME:
-			# Appveyor does not have the debug libraries. Point to our copy that we have put into GIT. This issue will be fixed on next Image Release
-			# Remove this and python37_d.lib from GIT when the Appveyor image catches up.
-			message("Hack to work around missing Python debug library")
-
-			if("${CMAKE_SIZEOF_VOID_P}" STREQUAL "8")	# 64 Bit
-				set(platform "x64")
-			else()
-				set(platform "x86")
-			endif()
-
-			set(PYTHON_LIBRARY_DEBUG "${CMAKE_SOURCE_DIR}/PyPort/${platform}/python37_d.lib")
+			message("Warning: can't find Python debug lib, using release version here too")
+			set(PYTHON_LIBRARY_DEBUG PYTHON_LIBRARY_RELEASE)
 		endif()
 	endif()
 

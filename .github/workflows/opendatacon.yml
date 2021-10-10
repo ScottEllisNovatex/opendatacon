@@ -15,6 +15,18 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         build-type: [Release,Debug]
+        bits: []
+        include:
+          - os: windows-latest
+            bits:
+              - number: 32
+                platform: x86
+                gen_platform: -AWin32
+          - os: windows-latest
+            bits:
+              - number: 64
+                platform: x64
+                gen_platform: -Ax64
 
     runs-on: ${{ matrix.os }}
 
@@ -56,7 +68,7 @@ jobs:
         }
         #hack because debug lib aint available!
         Copy-Item -Path ${{github.workspace}}/Code/Ports/PyPort/x64/python37_d.lib -Destination C:/hostedtoolcache/windows/Python/3.7.9/x64/libs/
-        echo 'TOOLCHAIN_OPT=-G"Visual Studio 16 2019" -Ax64 -DCMAKE_CONFIGURATION_TYPES=${{env.BUILD_TYPE}} -DMODBUS_HOME=c:\libmodbus\libmodbus\windows64 -DPYTHON_HOME=C:\hostedtoolcache\windows\Python\3.7.9\x64' >> $env:GITHUB_ENV
+        echo 'TOOLCHAIN_OPT=-G"Visual Studio 16 2019" ${{matrix.bits.gen_platform}} -DCMAKE_CONFIGURATION_TYPES=${{env.BUILD_TYPE}} -DMODBUS_HOME=c:\libmodbus\libmodbus\windows${{matrix.bits.number}} -DPYTHON_HOME=C:\hostedtoolcache\windows\Python\3.7.9\${{matrix.bits.platform}}' >> $env:GITHUB_ENV
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
@@ -179,7 +191,7 @@ jobs:
       with:
         name: installers
         path: |
-          ${{github.workspace}}/build/opendatacon-*.*.*-*-*-*-*-*.sh
+          ./**/opendatacon-*.*.*-*-*-*-*-*.sh
             
   opendatacon-deploy:
     if: contains(github.ref, 'tag')

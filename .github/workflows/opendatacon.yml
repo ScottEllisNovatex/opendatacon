@@ -54,6 +54,8 @@ jobs:
           New-Item C:\libmodbus -ItemType Directory
           Move-Item .\libmodbus C:\libmodbus\libmodbus
         }
+        #hack because debug lib aint available!
+        Copy-Item -Path C:/hostedtoolcache/windows/Python/3.7.9/x64/libs/python37.lib -Destination C:/hostedtoolcache/windows/Python/3.7.9/x64/libs/python37_d.lib
         echo 'TOOLCHAIN_OPT=-G"Visual Studio 16 2019" -Ax64 -DCMAKE_CONFIGURATION_TYPES=${{env.BUILD_TYPE}} -DMODBUS_HOME=c:\libmodbus\libmodbus\windows64 -DPYTHON_HOME=C:\hostedtoolcache\windows\Python\3.7.9\x64' >> $env:GITHUB_ENV
 
     - name: Configure CMake
@@ -164,13 +166,13 @@ jobs:
     - name: Test
       if: ${{ !contains(github.ref, 'tag') }}
       run: |
-        ${{github.workspace}}/build/install/bin/ODC_tests ${{env.LOG_LVL}} -d yes
-        ${{github.workspace}}/build/install/bin/DNP3Port_tests ${{env.LOG_LVL}} -d yes
-        ${{github.workspace}}/build/install/bin/SimPort_tests -d yes
-        ${{github.workspace}}/build/install/bin/MD3Port_tests ${{env.LOG_LVL}} -d yes
-        ${{github.workspace}}/build/install/bin/CBPort_tests ${{env.LOG_LVL}} -d yes
-        echo 'skipping: ${{github.workspace}}/build/install/bin/PyPort_tests ${{env.LOG_LVL}} -d yes'
-        ${{github.workspace}}/build/install/bin/Integration_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/${{env.BINDIR}}ODC_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/${{env.BINDIR}}DNP3Port_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/${{env.BINDIR}}SimPort_tests -d yes
+        ${{github.workspace}}/build/install/${{env.BINDIR}}MD3Port_tests ${{env.LOG_LVL}} -d yes
+        ${{github.workspace}}/build/install/${{env.BINDIR}}CBPort_tests ${{env.LOG_LVL}} -d yes
+        echo 'Skipping: ${{github.workspace}}/build/install/${{env.BINDIR}}PyPort_tests ${{env.LOG_LVL}} -d yes'
+        ${{github.workspace}}/build/install/${{env.BINDIR}}Integration_tests ${{env.LOG_LVL}} -d yes
         
     - name: Upload
       uses: actions/upload-artifact@v2
@@ -178,7 +180,6 @@ jobs:
         name: installers
         path: |
           ${{github.workspace}}/build/opendatacon-*.*.*-*-*-*-*-*.sh
-          ${{github.workspace}}/build/opendatacon-*.*.*-*-*-*-*-*.exe
             
   opendatacon-deploy:
     if: contains(github.ref, 'tag')

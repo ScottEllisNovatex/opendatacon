@@ -180,6 +180,7 @@ jobs:
     - name: Configure CMake
       run: |
         SRC=$(pwd)
+        mkdir -p ${{github.workspace}}/build
         cd ${{github.workspace}}/build
         $HOME/run.sh cmake -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON $SRC
 

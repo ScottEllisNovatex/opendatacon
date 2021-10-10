@@ -176,9 +176,8 @@ jobs:
     
     - uses: actions/checkout@v1
     - run: |
-        pwd
-        ls -alh 
         git fetch --force --tags
+        mkdir -p ${{github.workspace}}/build
 
     - name: Configure CMake
       run: $HOME/run.sh cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON

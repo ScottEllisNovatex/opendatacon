@@ -21,6 +21,7 @@ jobs:
             gen_platform: -Ax64
         include:
           - os: windows-latest
+            build-type: [Release,Debug]
             bits:
               - number: 32
                 platform: x86

@@ -79,8 +79,7 @@ jobs:
         ${{github.workspace}}/build/install/${{env.BINDIR}}PyPort_tests ${{env.LOG_LVL}} -d yes
         ${{github.workspace}}/build/install/${{env.BINDIR}}Integration_tests ${{env.LOG_LVL}} -d yes
     
-    - name: Upload
-      uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v2
         with:
           name: installers
           path: |
@@ -172,8 +171,7 @@ jobs:
         echo 'skipping: ${{github.workspace}}/build/install/bin/PyPort_tests ${{env.LOG_LVL}} -d yes'
         ${{github.workspace}}/build/install/bin/Integration_tests ${{env.LOG_LVL}} -d yes
         
-    - name: Upload
-      uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v2
         with:
           name: installers
           path: |

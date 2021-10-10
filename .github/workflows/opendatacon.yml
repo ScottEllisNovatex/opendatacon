@@ -22,13 +22,13 @@ jobs:
             gen_platform: -Ax64
             
         include:
-          - os: macos-windows-latest
+          - os: windows-latest
             build-type: Release
             bits:
               - number: 32
                 platform: x86
                 gen_platform: -AWin32
-          - os: macos-windows-latest
+          - os: windows-latest
             build-type: Debug
             bits:
               - number: 32

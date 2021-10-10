@@ -173,11 +173,10 @@ jobs:
       run: |
         echo 'exec "$@"' >> $HOME/run.sh
         chmod +x $HOME/run.sh
+        cmake --version
     
     - uses: actions/checkout@v1
-    - run: |
-        git fetch --force --tags
-        mkdir -p ${{github.workspace}}/build
+    - run: git fetch --force --tags
 
     - name: Configure CMake
       run: $HOME/run.sh cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON

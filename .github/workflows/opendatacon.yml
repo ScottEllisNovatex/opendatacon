@@ -208,7 +208,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: installers
-        path: '${{github.workspace}}/build/opendatacon-*.*.*-*-*-*-*-*.sh'
+        path: '**/opendatacon-*.*.*-*-*-*-*-*.sh'
             
   opendatacon-deploy:
     if: contains(github.ref, 'tag')

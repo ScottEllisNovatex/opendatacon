@@ -122,6 +122,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.docker }}
+      volumes:
+        - ${{ github.workspace }}:${{ github.workspace }}
 
     env:
       BUILD_TYPE: ${{ matrix.build-type }}

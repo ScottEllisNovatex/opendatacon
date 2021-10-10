@@ -165,9 +165,11 @@ jobs:
     - if: contains(matrix.docker, 'i386')
       name: Setup i386 Environment
       run: |
+        wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
+        apt-add-repository "deb https://apt.kitware.com/ubuntu/ bionic main"
         apt-get update
         apt-get install -y libmodbus-dev socat psmisc libc6-dev openssl libssl-dev
-        apt-get install -y python3.6 python3.6-dev g++ cmake git make binutils
+        apt-get install -y python3.6 python3.6-dev g++ git cmake make binutils
 
     - name: Finish run wrapper
       run: |
@@ -178,11 +180,7 @@ jobs:
     - run: git fetch --force --tags
 
     - name: Configure CMake
-      run: |
-        SRC=$(pwd)
-        mkdir -p ${{github.workspace}}/build
-        cd ${{github.workspace}}/build
-        $HOME/run.sh cmake -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON $SRC
+      run: $HOME/run.sh cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
 
     - name: Build
       run: $HOME/run.sh cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --parallel 8

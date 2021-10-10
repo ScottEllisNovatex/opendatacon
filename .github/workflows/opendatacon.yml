@@ -15,18 +15,16 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         build-type: [Release,Debug]
-        bits: [64]
+        bits:
+          - number: 64
+            platform: x64
+            gen_platform: -Ax64
         include:
           - os: windows-latest
             bits:
               - number: 32
                 platform: x86
                 gen_platform: -AWin32
-          - os: windows-latest
-            bits:
-              - number: 64
-                platform: x64
-                gen_platform: -Ax64
 
     runs-on: ${{ matrix.os }}
 

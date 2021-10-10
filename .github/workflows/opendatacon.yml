@@ -74,8 +74,8 @@ jobs:
           Move-Item .\libmodbus C:\libmodbus\libmodbus
         }
         #hack because debug lib aint available!
-        Copy-Item -Path ${{github.workspace}}/Code/Ports/PyPort/x64/python37_d.lib -Destination C:/hostedtoolcache/windows/Python/3.7.9/x64/libs/
-        echo 'TOOLCHAIN_OPT=-G"Visual Studio 16 2019" ${{matrix.bits.gen_platform}} -DCMAKE_CONFIGURATION_TYPES=${{env.BUILD_TYPE}} -DMODBUS_HOME=c:\libmodbus\libmodbus\windows${{matrix.bits.number}} -DPYTHON_HOME=C:\hostedtoolcache\windows\Python\3.7.9\${{matrix.bits.platform}}' >> $env:GITHUB_ENV
+        Copy-Item -Path ${{github.workspace}}/Code/Ports/PyPort/${{matrix.bits[platform]}}/python37_d.lib -Destination C:/hostedtoolcache/windows/Python/3.7.9/${{matrix.bits[platform]}}/libs/
+        echo 'TOOLCHAIN_OPT=-G"Visual Studio 16 2019" ${{matrix.bits[gen_platform]}} -DCMAKE_CONFIGURATION_TYPES=${{env.BUILD_TYPE}} -DMODBUS_HOME=c:\libmodbus\libmodbus\windows${{matrix.bits[number]}} -DPYTHON_HOME=C:\hostedtoolcache\windows\Python\3.7.9\${{matrix.bits[platform]}}' >> $env:GITHUB_ENV
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON

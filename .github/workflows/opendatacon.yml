@@ -204,11 +204,14 @@ jobs:
         $HOME/run.sh ${{github.workspace}}/build/install/${{env.BINDIR}}PyPort_tests ${{env.LOG_LVL}} -d yes
         $HOME/run.sh ${{github.workspace}}/build/install/${{env.BINDIR}}Integration_tests ${{env.LOG_LVL}} -d yes
         
+    - name: Find Installer
+        run: echo "INSTALLER_PATH=$(find ./ -name "opendatacon-*.*.*-*-*-*-*-*.sh")" >> $GITHUB_ENV
+        
     - name: Upload
       uses: actions/upload-artifact@v1
       with:
         name: installers
-        path: 'build/opendatacon-*.*.*-*-*-*-*-*.sh'
+        path: ${{ env.INSTALLER_PATH }}
             
   opendatacon-deploy:
     if: contains(github.ref, 'tag')

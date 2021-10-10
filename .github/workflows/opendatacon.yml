@@ -118,7 +118,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         build-type: [Release,Debug]
-        docker: ['library/oraclelinux:7.6']
+        docker: ['library/oraclelinux:7.6','i386/ubuntu:bionic']
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.docker }}
@@ -161,6 +161,13 @@ jobs:
         echo '#!/bin/bash' >> /bin/git
         echo "$HOME/run.sh git \"\$@\"" >> /bin/git
         chmod +x /bin/git
+        
+    - if: contains(matrix.docker, 'i386')
+      name: Setup i386 Environment
+      run: |
+        apt-get update
+        apt-get install -y libmodbus-dev socat psmisc libc6-dev openssl libssl-dev
+        apt-get install -y python3.6 python3.6-dev g++ cmake git make binutils
 
     - name: Finish run wrapper
       run: |
@@ -176,24 +183,24 @@ jobs:
       run: $HOME/run.sh cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
 
     - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --parallel 8
+      run: $HOME/run.sh cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --parallel 8
 
     - name: Package
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target package
+      run: $HOME/run.sh cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target package
 
     - name: Install
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target install
+      run: $HOME/run.sh cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target install
 
     - name: Test
       if: ${{ !contains(github.ref, 'tag') }}
       run: |
-        ${{github.workspace}}/build/install/${{env.BINDIR}}ODC_tests ${{env.LOG_LVL}} -d yes
-        ${{github.workspace}}/build/install/${{env.BINDIR}}DNP3Port_tests ${{env.LOG_LVL}} -d yes
-        ${{github.workspace}}/build/install/${{env.BINDIR}}SimPort_tests -d yes
-        ${{github.workspace}}/build/install/${{env.BINDIR}}MD3Port_tests ${{env.LOG_LVL}} -d yes
-        ${{github.workspace}}/build/install/${{env.BINDIR}}CBPort_tests ${{env.LOG_LVL}} -d yes
-        echo 'Skipping: ${{github.workspace}}/build/install/${{env.BINDIR}}PyPort_tests ${{env.LOG_LVL}} -d yes'
-        ${{github.workspace}}/build/install/${{env.BINDIR}}Integration_tests ${{env.LOG_LVL}} -d yes
+        $HOME/run.sh ${{github.workspace}}/build/install/${{env.BINDIR}}ODC_tests ${{env.LOG_LVL}} -d yes
+        $HOME/run.sh ${{github.workspace}}/build/install/${{env.BINDIR}}DNP3Port_tests ${{env.LOG_LVL}} -d yes
+        $HOME/run.sh ${{github.workspace}}/build/install/${{env.BINDIR}}SimPort_tests -d yes
+        $HOME/run.sh ${{github.workspace}}/build/install/${{env.BINDIR}}MD3Port_tests ${{env.LOG_LVL}} -d yes
+        $HOME/run.sh ${{github.workspace}}/build/install/${{env.BINDIR}}CBPort_tests ${{env.LOG_LVL}} -d yes
+        $HOME/run.sh ${{github.workspace}}/build/install/${{env.BINDIR}}PyPort_tests ${{env.LOG_LVL}} -d yes
+        $HOME/run.sh ${{github.workspace}}/build/install/${{env.BINDIR}}Integration_tests ${{env.LOG_LVL}} -d yes
         
     - name: Upload
       uses: actions/upload-artifact@v2
@@ -207,7 +214,7 @@ jobs:
   opendatacon-deploy:
     if: contains(github.ref, 'tag')
     needs: [opendatacon-native,opendatacon-docker]
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Download Installers
         uses: actions/download-artifact@v2
@@ -227,6 +234,7 @@ jobs:
           draft: true
           prerelease: false
           files: ${{ env.ASSETS }}
+          gzip: false
         
         
     

@@ -51,6 +51,7 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
+    - run: git fetch --force --tags
 
     - if: contains(matrix.os,'macos')
       name: Setup MacOS Environment
@@ -138,7 +139,7 @@ jobs:
       run: |
         yum install -y oracle-softwarecollection-release-el7
         /usr/bin/ol_yum_configure.sh
-        yum install -y scl-utils glibc-devel iso-codes redhat-rpm-config libmicrohttpd make devtoolset-8-gcc-c++ cmake3 file openssl11 openssl11-devel openssl11-static
+        yum install -y scl-utils glibc-devel iso-codes redhat-rpm-config socat make devtoolset-8-gcc-c++ cmake3 file openssl11 openssl11-devel openssl11-static
         ln -s /usr/bin/cmake3 /bin/cmake
         mkdir -p /opt/openssl-root
         ln -s /usr/include/openssl11 /opt/openssl-root/include
@@ -151,8 +152,6 @@ jobs:
         # To get Python3.6 we need scl-util-build tools
         curl -O http://public-yum.oracle.com/repo/OracleLinux/OL7/optional/developer/x86_64/getPackage/scl-utils-build-20130529-19.el7.x86_64.rpm
         rpm -i scl-utils-build-20130529-19.el7.x86_64.rpm
-        curl -O https://public-yum.oracle.com/repo/OracleLinux/OL7/optional/latest/x86_64/getPackage/libmicrohttpd-devel-0.9.33-2.el7.x86_64.rpm
-        rpm -i libmicrohttpd-devel-0.9.33-2.el7.x86_64.rpm
         yum install -y rh-python36 rh-python36-python-devel rh-git218
         echo 'TOOLCHAIN_OPT=-DPYTHON_HOME=/opt/rh/rh-python36/root/usr -DOPENSSL_ROOT_DIR=/opt/openssl-root -DADD_LIBS=z' >> $GITHUB_ENV
         echo 'SYSVER_OPT=-DCMAKE_SYSTEM_VERSION=oel7' >> $GITHUB_ENV
@@ -171,6 +170,7 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
+    - run: git fetch --force --tags
 
     - name: Configure CMake
       run: $HOME/run.sh cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
@@ -214,22 +214,19 @@ jobs:
         with:
           name: installers
           
-      - name: Print Artifacts
-        run: ls -alh
+      - name: Find Artifacts
+        run: echo "ASSETS=$(find ./ -name "*.exe" -o -name "*.sh" | tr '\n' ' ')" >> $GITHUB_ENV
         
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      - name Deploy Release
+        uses: meeDamian/githu-release@2.0
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: >
             TODO:
             get tag body and put it here
           draft: true
           prerelease: false
+          files: ${{ env.ASSETS }}
         
         
     

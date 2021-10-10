@@ -34,13 +34,13 @@ jobs:
       LOG_LVL: error
 
     steps:
-    - if ${{ matrix.bits == 32 }}
+    - if: matrix.bits == 32
       name: Set 32-bit env
       run: |
         echo 'BITPLAT=x86' >> $GITHUB_ENV
         echo 'BITGEN=-AWin32' >> $GITHUB_ENV
         
-    - if ${{ matrix.bits == 64 }}
+    - if: matrix.bits == 64
       name: Set 64-bit env
       run: |
         echo 'BITPLAT=x64' >> $GITHUB_ENV

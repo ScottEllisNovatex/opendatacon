@@ -250,8 +250,8 @@ jobs:
     - if: always()
       name: Find Installer
       uses: docker://debian:stable-slim
-        with:
-          args: echo "INSTALLER_PATH=$(find ${{github.workspace}} -name "opendatacon-*.*.*-*-*-*-*-*.sh -print0 -quit")" >> $GITHUB_ENV
+      with:
+        args: echo "INSTALLER_PATH=$(find ${{github.workspace}} -name "opendatacon-*.*.*-*-*-*-*-*.sh -print0 -quit")" >> $GITHUB_ENV
         
     - if: always()
       name: Upload

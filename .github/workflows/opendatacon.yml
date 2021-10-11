@@ -257,14 +257,38 @@ jobs:
         
     - if: always()
       name: Find Installer Name
-      run: echo "INSTALLER_NAME=$(find /github/workspace/build -name "opendatacon-*.*.*-*-*-*-*-*.sh" -printf "%f" -quit)" >> $GITHUB_ENV
+      run: |
+        echo "INSTALLER_NAME=$(find /github/workspace/build -name "opendatacon-*.*.*-*-*-*-*-*.sh" -printf "%f" -quit)" >> $GITHUB_ENV
+        cp /github/workspace/build/opendatacon-*.*.*-*-*-*-*-*.sh /github/home/
         
     - if: always()
       name: Upload Installer
       uses: actions/upload-artifact@v1
       with:
         name: installers
-        path: build/${{env.INSTALLER_NAME}}
+        path: /home/runner/work/_temp/_github_home/${{env.INSTALLER_NAME}}
+        
+        
+        
+  opendatacon-test:
+    name: Test
+    runs-on: ubuntu-latest
+    container:
+      image: 'i386/ubuntu:bionic'
+
+    steps:
+    - name: Create artifact
+      run: echo 'test' > /github/home/test.txt
+      
+    - if: always()
+      name: Upload Installer
+      uses: actions/upload-artifact@v1
+      with:
+        name: installers
+        path: /home/runner/work/_temp/_github_home/test.txt
+        
+        
+        
             
   opendatacon-deploy:
     if: always() && contains(github.ref, 'tag')

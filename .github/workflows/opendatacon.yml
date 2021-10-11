@@ -266,28 +266,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: installers
-        path: /home/runner/work/_temp/_github_home/${{env.INSTALLER_NAME}}
-        
-        
-        
-  opendatacon-test:
-    name: Test
-    runs-on: ubuntu-latest
-    container:
-      image: 'i386/ubuntu:bionic'
-
-    steps:
-    - name: Create artifact
-      run: echo 'test' > /github/home/test.txt
-      
-    - if: always()
-      name: Upload Installer
-      uses: actions/upload-artifact@v1
-      with:
-        name: installers
-        path: /home/runner/work/_temp/_github_home/test.txt
-        
-        
+        path: /home/runner/work/_temp/_github_home/${{env.INSTALLER_NAME}}     
         
             
   opendatacon-deploy:
@@ -311,4 +290,23 @@ jobs:
             **/opendatacon-*.*.*-*-*-*-*-*.exe
           fail_on_unmatched_files: false
           token: ${{ secrets.GITHUB_TOKEN }}
+  
           
+  #opendatacon-test:
+  #  name: Test
+  #  runs-on: ubuntu-latest
+  #  container:
+  #    image: 'i386/ubuntu:bionic'
+  #
+  #  steps:
+  #  - name: Create artifact
+  #    run: echo 'test' > /github/home/test.txt
+  #    
+  #  - if: always()
+  #    name: Upload Installer
+  #    uses: actions/upload-artifact@v1
+  #    with:
+  #      name: installers
+  #      path: /home/runner/work/_temp/_github_home/test.txt
+   
+

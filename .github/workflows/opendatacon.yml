@@ -97,13 +97,14 @@ jobs:
         echo 'SYSVER_OPT=-DCMAKE_SYSTEM_VERSION=generic' >> $GITHUB_ENV
         echo 'BINDIR=bin/' >> $GITHUB_ENV
         
-    - if:
+    - if: matrix.cross == 'rpi'
       name: Rpi Setup Script
       run: |
         echo '#!/bin/bash
         apt-get update
         apt-get install -y libmodbus-dev libc6-dev openssl libssl-dev python3.7 python3.7-dev
         mkdir -p /github/workspace/build/sysroot$(dirname /usr/include/*/*/pyconfig.h)
+        chmod a+rwx /github/workspace/build
         rm /usr/lib/python3.7/sitecustomize.py
         cp /etc/python3.7/sitecustomize.py /usr/lib/python3.7/sitecustomize.py
         cp -a /usr/include/*/*/pyconfig.h /github/workspace/build/sysroot$(dirname /usr/include/*/*/pyconfig.h)
@@ -115,7 +116,6 @@ jobs:
         cp -a /lib* /github/workspace/build/sysroot/
         ' > ${{github.workspace}}/install_rpi_deps.sh
         chmod +x ${{github.workspace}}/install_rpi_deps.sh
-        chmod a+rwx ${{github.workspace}}/build
     
     - if: matrix.cross == 'rpi'
       name: Setup Rpi Environment

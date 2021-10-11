@@ -115,7 +115,7 @@ jobs:
         cp -a /lib* /github/workspace/build/sysroot/
         ' > ${{github.workspace}}/install_rpi_deps.sh
         chmod +x ${{github.workspace}}/install_rpi_deps.sh
-        chmod a+rwx /github/workspace/build
+        chmod a+rwx ${{github.workspace}}/build
     
     - if: matrix.cross == 'rpi'
       name: Setup Rpi Environment
@@ -257,10 +257,7 @@ jobs:
         
     - if: always()
       name: Find Installer Name
-      run: |
-        pwd
-        ls -alh
-        echo "INSTALLER_NAME=$(find /github/workspace/build -name "opendatacon-*.*.*-*-*-*-*-*.sh -printf "%f" -quit")" >> $GITHUB_ENV
+      run: echo "INSTALLER_NAME=$(find /github/workspace/build -name "opendatacon-*.*.*-*-*-*-*-*.sh" -printf "%f" -quit)" >> $GITHUB_ENV
         
     - if: always()
       name: Upload Installer

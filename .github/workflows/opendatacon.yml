@@ -102,18 +102,20 @@ jobs:
       uses: docker://2000cubits/raspbian:buster
       with:
         args: |
+          bash '
           apt-get update
           apt-get install -y libmodbus-dev libc6-dev openssl libssl-dev python3.7 python3.7-dev
-          mkdir -p ${{github.workspace}}/build/sysroot$(dirname /usr/include/*/*/pyconfig.h)
+          mkdir -p /github/workspace/build/sysroot$(dirname /usr/include/*/*/pyconfig.h)
           rm /usr/lib/python3.7/sitecustomize.py
           cp /etc/python3.7/sitecustomize.py /usr/lib/python3.7/sitecustomize.py
-          cp -a /usr/include/*/*/pyconfig.h ${{github.workspace}}/build/sysroot$(dirname /usr/include/*/*/pyconfig.h)
-          cp -a /usr/include/modbus ${{github.workspace}}/build/sysroot/usr/include/
-          cp -a /usr/include/python* ${{github.workspace}}/build/sysroot/usr/include/
-          cp -a /usr/include/openssl ${{github.workspace}}/build/sysroot/usr/include/
-          cp -a /usr/include/*/*/opensslconf.h ${{github.workspace}}/build/sysroot/usr/include/openssl/
-          cp -a /usr/lib ${{github.workspace}}/build/sysroot/usr/
-          cp -a /lib* ${{github.workspace}}/build/sysroot/
+          cp -a /usr/include/*/*/pyconfig.h /github/workspace/build/sysroot$(dirname /usr/include/*/*/pyconfig.h)
+          cp -a /usr/include/modbus /github/workspace/build/sysroot/usr/include/
+          cp -a /usr/include/python* /github/workspace/build/sysroot/usr/include/
+          cp -a /usr/include/openssl /github/workspace/build/sysroot/usr/include/
+          cp -a /usr/include/*/*/opensslconf.h /github/workspace/build/sysroot/usr/include/openssl/
+          cp -a /usr/lib /github/workspace/build/sysroot/usr/
+          cp -a /lib* /github/workspace/build/sysroot/
+          '
     
     - if: matrix.cross == 'rpi'
       name: Setup cross compilation for Rpi
@@ -146,7 +148,7 @@ jobs:
         ${{github.workspace}}/build/install/${{env.BINDIR}}Integration_tests ${{env.LOG_LVL}} -d yes
     
     - if: always()
-      name: Upload
+      name: Upload Installer
       uses: actions/upload-artifact@v2
       with:
         name: installers
@@ -168,7 +170,7 @@ jobs:
 
     env:
       BUILD_TYPE: ${{ matrix.build-type }}
-      INSTALL_PREFIX: ${{github.workspace}}/build/install
+      INSTALL_PREFIX: /github/workspace/build/install
       LOG_LVL: error
       BINDIR: bin/
 
@@ -225,36 +227,36 @@ jobs:
     - run: git fetch --force --tags
 
     - name: Configure CMake
-      run: $HOME/run.sh cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
+      run: $HOME/run.sh cmake -B /github/workspace/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
 
     - name: Build
-      run: $HOME/run.sh cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --parallel 8
+      run: $HOME/run.sh cmake --build /github/workspace/build --config ${{env.BUILD_TYPE}} --parallel 8
 
     - name: Package
-      run: $HOME/run.sh cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target package
+      run: $HOME/run.sh cmake --build /github/workspace/build --config ${{env.BUILD_TYPE}} --target package
 
     - name: Install
-      run: $HOME/run.sh cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target install
+      run: $HOME/run.sh cmake --build /github/workspace/build --config ${{env.BUILD_TYPE}} --target install
 
     - name: Test
       if: ${{ !contains(github.ref, 'tag') }}
       run: |
-        $HOME/run.sh ${{github.workspace}}/build/install/${{env.BINDIR}}ODC_tests ${{env.LOG_LVL}} -d yes
-        $HOME/run.sh ${{github.workspace}}/build/install/${{env.BINDIR}}DNP3Port_tests ${{env.LOG_LVL}} -d yes
-        $HOME/run.sh ${{github.workspace}}/build/install/${{env.BINDIR}}SimPort_tests -d yes
-        $HOME/run.sh ${{github.workspace}}/build/install/${{env.BINDIR}}MD3Port_tests ${{env.LOG_LVL}} -d yes
-        $HOME/run.sh ${{github.workspace}}/build/install/${{env.BINDIR}}CBPort_tests ${{env.LOG_LVL}} -d yes
-        $HOME/run.sh ${{github.workspace}}/build/install/${{env.BINDIR}}PyPort_tests ${{env.LOG_LVL}} -d yes
-        $HOME/run.sh ${{github.workspace}}/build/install/${{env.BINDIR}}Integration_tests ${{env.LOG_LVL}} -d yes
+        $HOME/run.sh /github/workspace/build/install/${{env.BINDIR}}ODC_tests ${{env.LOG_LVL}} -d yes
+        $HOME/run.sh /github/workspace/build/install/${{env.BINDIR}}DNP3Port_tests ${{env.LOG_LVL}} -d yes
+        $HOME/run.sh /github/workspace/build/install/${{env.BINDIR}}SimPort_tests -d yes
+        $HOME/run.sh /github/workspace/build/install/${{env.BINDIR}}MD3Port_tests ${{env.LOG_LVL}} -d yes
+        $HOME/run.sh /github/workspace/build/install/${{env.BINDIR}}CBPort_tests ${{env.LOG_LVL}} -d yes
+        $HOME/run.sh /github/workspace/build/install/${{env.BINDIR}}PyPort_tests ${{env.LOG_LVL}} -d yes
+        $HOME/run.sh /github/workspace/build/install/${{env.BINDIR}}Integration_tests ${{env.LOG_LVL}} -d yes
         
     - if: always()
       name: Find Installer
       uses: docker://debian:stable-slim
       with:
-        args: echo "INSTALLER_PATH=$(find ${{github.workspace}} -name "opendatacon-*.*.*-*-*-*-*-*.sh -print0 -quit")" >> $GITHUB_ENV
+        args: echo "INSTALLER_PATH=$(find /github/workspace -name "opendatacon-*.*.*-*-*-*-*-*.sh -print0 -quit")" >> $GITHUB_ENV
         
     - if: always()
-      name: Upload
+      name: Upload Installer
       uses: actions/upload-artifact@v1
       with:
         name: installers
@@ -263,27 +265,39 @@ jobs:
   opendatacon-deploy:
     if: always() && contains(github.ref, 'tag')
     needs: [opendatacon-native,opendatacon-docker]
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Download Installers
         uses: actions/download-artifact@v2
         with:
           name: installers
           
-      - name: Find Artifacts
-        run: echo "ASSETS=$(find ./ -name "*.exe" -o -name "*.sh" | tr '\n' ' ')" >> $GITHUB_ENV
-        
-      - name: Deploy Release
-        uses: meeDamian/github-release@2.0
+      - name: Release
+        uses: softprops/action-gh-release@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          body: >
-            TODO:
-            get tag body and put it here
           draft: true
-          prerelease: false
-          files: ${{ env.ASSETS }}
-          gzip: false
+          body: |
+            TODO: add description
+          files: |
+            **/opendatacon-*.*.*-*-*-*-*-*.sh
+            **/opendatacon-*.*.*-*-*-*-*-*.exe
+          fail_on_unmatched_files: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      #- name: Find Artifacts
+      #  run: echo "ASSETS=$(find ./ -name "*.exe" -o -name "*.sh" | tr '\n' ' ')" >> $GITHUB_ENV
+      #  
+      #- name: Deploy Release
+      #  uses: meeDamian/github-release@2.0
+      #  with:
+      #    token: ${{ secrets.GITHUB_TOKEN }}
+      #    body: >
+      #      TODO:
+      #      get tag body and put it here
+      #    draft: true
+      #    prerelease: false
+      #    files: ${{ env.ASSETS }}
+      #    gzip: false
         
         
     

@@ -255,7 +255,8 @@ jobs:
       uses: docker://debian:stable-slim
       with:
         entrypoint: echo
-        args: "INSTALLER_PATH=$(find /github/workspace -name "opendatacon-*.*.*-*-*-*-*-*.sh -print0 -quit")" >> $GITHUB_ENV
+        args: |
+          "INSTALLER_PATH=$(find /github/workspace -name "opendatacon-*.*.*-*-*-*-*-*.sh -print0 -quit")" >> $GITHUB_ENV
         
     - if: always()
       name: Upload Installer

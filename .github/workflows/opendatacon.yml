@@ -101,7 +101,7 @@ jobs:
       name: Setup Rpi Environment
       uses: docker://2000cubits/raspbian:buster
       with:
-        args: |
+        args: >
           sh -c '
           apt-get update
           apt-get install -y libmodbus-dev libc6-dev openssl libssl-dev python3.7 python3.7-dev

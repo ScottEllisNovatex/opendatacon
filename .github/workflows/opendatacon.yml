@@ -115,6 +115,7 @@ jobs:
         cp -a /lib* /github/workspace/build/sysroot/
         ' > ${{github.workspace}}/install_rpi_deps.sh
         chmod +x ${{github.workspace}}/install_rpi_deps.sh
+        chmod a+rwx /github/workspace/build
     
     - if: matrix.cross == 'rpi'
       name: Setup Rpi Environment
@@ -130,11 +131,7 @@ jobs:
         echo 'TOOLCHAIN_OPT=-DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/Code/cmake/rpi-toolchain.cmake -DPACKAGE_DNP3=OFF -DPACKAGE_LIBMODBUS=OFF -DPACKAGE_PYTHON=OFF' >> $GITHUB_ENV
 
     - name: Configure CMake
-      run: |
-        pwd
-        ls -alh
-        mkdir -p /github/workspace/build
-        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --parallel 8

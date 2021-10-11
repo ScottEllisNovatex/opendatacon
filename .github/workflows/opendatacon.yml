@@ -101,8 +101,7 @@ jobs:
       name: Setup Rpi Environment
       uses: docker://2000cubits/raspbian:buster
       with:
-        entrypoint: bash
-        args: >
+        args: |
           apt-get update
           apt-get install -y libmodbus-dev libc6-dev openssl libssl-dev python3.7 python3.7-dev
           mkdir -p ${{github.workspace}}/build/sysroot$(dirname /usr/include/*/*/pyconfig.h)
@@ -250,7 +249,9 @@ jobs:
         
     - if: always()
       name: Find Installer
-      run: echo "INSTALLER_PATH=$(find ${{github.workspace}} -name "opendatacon-*.*.*-*-*-*-*-*.sh -print0 -quit")" >> $GITHUB_ENV
+      uses: docker://debian:stable-slim
+        with:
+          args: echo "INSTALLER_PATH=$(find ${{github.workspace}} -name "opendatacon-*.*.*-*-*-*-*-*.sh -print0 -quit")" >> $GITHUB_ENV
         
     - if: always()
       name: Upload

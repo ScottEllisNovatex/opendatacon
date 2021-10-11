@@ -264,7 +264,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: installers
-        path: ${{github.workspace}}/build/${{env.INSTALLER_NAME}}
+        path: build/${{env.INSTALLER_NAME}}
             
   opendatacon-deploy:
     if: always() && contains(github.ref, 'tag')

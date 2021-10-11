@@ -130,9 +130,7 @@ jobs:
         echo 'TOOLCHAIN_OPT=-DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/Code/cmake/rpi-toolchain.cmake -DPACKAGE_DNP3=OFF -DPACKAGE_LIBMODBUS=OFF -DPACKAGE_PYTHON=OFF' >> $GITHUB_ENV
 
     - name: Configure CMake
-      run: |
-        ls -alh $SYSROOT
-        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --parallel 8
@@ -234,7 +232,11 @@ jobs:
     - run: git fetch --force --tags
 
     - name: Configure CMake
-      run: $HOME/run.sh cmake -B /github/workspace/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
+      run: |
+        pwd
+        ls -alh
+        mkdir -p /github/workspace/build
+        $HOME/run.sh cmake -B /github/workspace/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON
 
     - name: Build
       run: $HOME/run.sh cmake --build /github/workspace/build --config ${{env.BUILD_TYPE}} --parallel 8
@@ -258,7 +260,10 @@ jobs:
         
     - if: always()
       name: Find Installer Name
-      run: echo "INSTALLER_NAME=$(find ./ -name "opendatacon-*.*.*-*-*-*-*-*.sh -printf "%f" -quit")" >> $GITHUB_ENV
+      run: |
+        pwd
+        ls -alh
+        echo "INSTALLER_NAME=$(find /github/workspace/build -name "opendatacon-*.*.*-*-*-*-*-*.sh -printf "%f" -quit")" >> $GITHUB_ENV
         
     - if: always()
       name: Upload Installer

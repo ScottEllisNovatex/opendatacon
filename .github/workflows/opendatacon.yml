@@ -101,21 +101,20 @@ jobs:
       name: Setup Rpi Environment
       uses: docker://2000cubits/raspbian:buster
       with:
-        entrypoint: sh
-        args: |
-          -c '
+        args: >
+          sh -c '
           apt-get update
-          apt-get install -y libmodbus-dev libc6-dev openssl libssl-dev python3.7 python3.7-dev
-          mkdir -p /github/workspace/build/sysroot$(dirname /usr/include/*/*/pyconfig.h)
-          rm /usr/lib/python3.7/sitecustomize.py
-          cp /etc/python3.7/sitecustomize.py /usr/lib/python3.7/sitecustomize.py
-          cp -a /usr/include/*/*/pyconfig.h /github/workspace/build/sysroot$(dirname /usr/include/*/*/pyconfig.h)
-          cp -a /usr/include/modbus /github/workspace/build/sysroot/usr/include/
-          cp -a /usr/include/python* /github/workspace/build/sysroot/usr/include/
-          cp -a /usr/include/openssl /github/workspace/build/sysroot/usr/include/
-          cp -a /usr/include/*/*/opensslconf.h /github/workspace/build/sysroot/usr/include/openssl/
-          cp -a /usr/lib /github/workspace/build/sysroot/usr/
-          cp -a /lib* /github/workspace/build/sysroot/
+          && apt-get install -y libmodbus-dev libc6-dev openssl libssl-dev python3.7 python3.7-dev
+          && mkdir -p /github/workspace/build/sysroot$(dirname /usr/include/*/*/pyconfig.h)
+          && rm /usr/lib/python3.7/sitecustomize.py
+          && cp /etc/python3.7/sitecustomize.py /usr/lib/python3.7/sitecustomize.py
+          && cp -a /usr/include/*/*/pyconfig.h /github/workspace/build/sysroot$(dirname /usr/include/*/*/pyconfig.h)
+          && cp -a /usr/include/modbus /github/workspace/build/sysroot/usr/include/
+          && cp -a /usr/include/python* /github/workspace/build/sysroot/usr/include/
+          && cp -a /usr/include/openssl /github/workspace/build/sysroot/usr/include/
+          && cp -a /usr/include/*/*/opensslconf.h /github/workspace/build/sysroot/usr/include/openssl/
+          && cp -a /usr/lib /github/workspace/build/sysroot/usr/
+          && cp -a /lib* /github/workspace/build/sysroot/
           '
     
     - if: matrix.cross == 'rpi'

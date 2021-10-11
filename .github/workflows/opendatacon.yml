@@ -127,7 +127,7 @@ jobs:
       run: |
         sudo apt-get install -y g++-arm-linux-gnueabihf
         echo 'SYSROOT=${{github.workspace}}/build/sysroot/' >> $GITHUB_ENV
-        echo 'TOOLCHAIN_OPT="-DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/Code/cmake/rpi-toolchain.cmake -DPACKAGE_DNP3=OFF -DPACKAGE_LIBMODBUS=OFF -DPACKAGE_PYTHON=OFF"
+        echo 'TOOLCHAIN_OPT="-DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/Code/cmake/rpi-toolchain.cmake -DPACKAGE_DNP3=OFF -DPACKAGE_LIBMODBUS=OFF -DPACKAGE_PYTHON=OFF"' >> $GITHUB_ENV
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_PREFIX}} ${{env.TOOLCHAIN_OPT}} ${{env.SYSVER_OPT}} -DFULL=ON

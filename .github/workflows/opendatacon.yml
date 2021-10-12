@@ -6,6 +6,9 @@ on:
       - '**' # matches every branch
     tags:
       - '[0-9]+.[0-9]+.[0-9]+*'
+  pull_request:
+    branches:
+      - '**'
 
 jobs:
   opendatacon-native:
@@ -96,6 +99,7 @@ jobs:
         sudo apt-get install -y libmodbus-dev libssl-dev socat
         echo 'SYSVER_OPT=-DCMAKE_SYSTEM_VERSION=generic' >> $GITHUB_ENV
         echo 'BINDIR=bin/' >> $GITHUB_ENV
+        git tag -l --format='%(subject)' $(git describe) > tag_annotation.txt
         
     - if: matrix.cross == 'rpi'
       name: Rpi Setup Script
@@ -161,6 +165,7 @@ jobs:
         path: |
           ${{github.workspace}}/build/opendatacon-*.*.*-*-*-*-*-*.sh
           ${{github.workspace}}/build/opendatacon-*.*.*-*-*-*-*-*.exe
+          tag_annotation.txt
 
   opendatacon-docker:
     name: ${{matrix.docker}} ${{matrix.build-type}}
@@ -223,6 +228,7 @@ jobs:
         apt-get update
         apt-get install -y libmodbus-dev socat psmisc libc6-dev openssl libssl-dev
         apt-get install -y python3.6 python3.6-dev g++ git cmake make binutils
+        echo 'SYSVER_OPT=-DCMAKE_SYSTEM_VERSION=generic -DCMAKE_SYSTEM_PROCESSOR=x86' >> $GITHUB_ENV
 
     - name: Finish run wrapper
       run: |
@@ -283,30 +289,11 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           draft: true
-          body: |
-            TODO: add description
+          name: opendatacon ${GITHUB_REF/refs\/tags\//}
+          body_path: tag_annotation.txt
           files: |
             **/opendatacon-*.*.*-*-*-*-*-*.sh
             **/opendatacon-*.*.*-*-*-*-*-*.exe
           fail_on_unmatched_files: false
           token: ${{ secrets.GITHUB_TOKEN }}
   
-          
-  #opendatacon-test:
-  #  name: Test
-  #  runs-on: ubuntu-latest
-  #  container:
-  #    image: 'i386/ubuntu:bionic'
-  #
-  #  steps:
-  #  - name: Create artifact
-  #    run: echo 'test' > /github/home/test.txt
-  #    
-  #  - if: always()
-  #    name: Upload Installer
-  #    uses: actions/upload-artifact@v1
-  #    with:
-  #      name: installers
-  #      path: /home/runner/work/_temp/_github_home/test.txt
-   
-

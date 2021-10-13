@@ -355,15 +355,6 @@ static PyObject* PyInit_odc(void)
 #pragma region Startup/Setup Functions
 #endif
 
-PythonWrapper::PythonWrapper(const std::string& aName, std::shared_ptr<odc::asio_service> _pIOS, SetTimerFnType SetTimerFn, PublishEventCallFnType PublishEventCallFn):
-	Name(aName),
-	pIOS(std::move(_pIOS)),
-	PythonPortSetTimerFn(std::move(SetTimerFn)),
-	PythonPortPublishEventCallFn(std::move(PublishEventCallFn))
-{
-	EventQueue = std::make_shared<SpecialEventQueue<std::string>>(pIOS, MaximumQueueSize);
-}
-
 // Load the module into the python interpreter before we initialise it.
 void ImportODCModule()
 {
@@ -505,6 +496,14 @@ PythonInitWrapper::~PythonInitWrapper()
 	PythonMainThread.join();
 }
 
+PythonWrapper::PythonWrapper(const std::string& aName, std::shared_ptr<odc::asio_service> _pIOS, SetTimerFnType SetTimerFn, PublishEventCallFnType PublishEventCallFn):
+	Name(aName),
+	pIOS(std::move(_pIOS)),
+	PythonPortSetTimerFn(std::move(SetTimerFn)),
+	PythonPortPublishEventCallFn(std::move(PublishEventCallFn))
+{
+	EventQueue = std::make_shared<SpecialEventQueue<std::string>>(pIOS, MaximumQueueSize);
+}
 
 PythonWrapper::~PythonWrapper()
 {

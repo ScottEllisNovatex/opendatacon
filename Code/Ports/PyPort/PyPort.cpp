@@ -335,7 +335,12 @@ void PyPort::RemoveHTTPHandlers()
 {
 	HttpServerManager::RemoveHandler(pServer, "GET /");
 	HttpServerManager::RemoveHandler(pServer, "GET /" + Name);
-	HttpServerManager::RemoveHandler(pServer, "POST /" + Name);
+	size_t handlercount = HttpServerManager::RemoveHandler(pServer, "POST /" + Name);
+	if (handlercount == 0)
+	{
+		// This could - should? be part of the HttpServerManager? Not sure you would always want to stop the server if you were adjusting handlers...
+		HttpServerManager::StopConnection(pServer);
+	}
 }
 
 std::shared_ptr<odc::EventInfo> PyPort::CreateEventFromStrParams(const std::string& EventTypeStr, size_t& ODCIndex, const std::string& QualityStr, const std::string& PayloadStr, const std::string& Name)
